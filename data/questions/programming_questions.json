@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "type": "regex_matching",
+    "category": "编程",
+    "difficulty": "中等",
+    "question": "请使用正则表达式找出以下文本中所有的电子邮件地址：\n\n文本：\"请联系我们：admin@example.com，技术支持：support@test.org，或者发送邮件到 contact123@company.cn。无效格式：admin@、@example.com、test@。\"\n\n要求：\n1. 写出匹配电子邮件的正则表达式\n2. 列出所有匹配的邮件地址\n3. 解释正则表达式的各个部分",
+    "content": "请使用正则表达式找出以下文本中所有的电子邮件地址：\n\n文本：\"请联系我们：admin@example.com，技术支持：support@test.org，或者发送邮件到 contact123@company.cn。无效格式：admin@、@example.com、test@。\"\n\n要求：\n1. 写出匹配电子邮件的正则表达式\n2. 列出所有匹配的邮件地址\n3. 解释正则表达式的各个部分"
+  },
+  {
+    "id": 2,
+    "type": "code_debugging",
+    "category": "编程",
+    "difficulty": "中等",
+    "question": "以下Python代码试图计算列表中所有偶数的平方和，但存在错误。请找出并修正所有错误：\n\n```python\ndef sum_of_even_squares(numbers):\n    total = 0\n    for num in numbers:\n        if num % 2 = 0:  # 检查是否为偶数\n            total += num ** 2\n    return total\n\n# 测试\nnumbers = [1, 2, 3, 4, 5, 6]\nresult = sum_of_even_squares(numbers)\nprint(f\"偶数平方和：{result}\")\n# 期望输出：偶数平方和：56 (2²+4²+6² = 4+16+36 = 56)\n```\n\n要求：\n1. 指出代码中的所有错误\n2. 提供修正后的完整代码\n3. 解释修正的原因",
+    "content": "以下Python代码试图计算列表中所有偶数的平方和，但存在错误。请找出并修正所有错误：\n\n```python\ndef sum_of_even_squares(numbers):\n    total = 0\n    for num in numbers:\n        if num % 2 = 0:  # 检查是否为偶数\n            total += num ** 2\n    return total\n\n# 测试\nnumbers = [1, 2, 3, 4, 5, 6]\nresult = sum_of_even_squares(numbers)\nprint(f\"偶数平方和：{result}\")\n# 期望输出：偶数平方和：56 (2²+4²+6² = 4+16+36 = 56)\n```\n\n要求：\n1. 指出代码中的所有错误\n2. 提供修正后的完整代码\n3. 解释修正的原因"
+  },
+  {
+    "id": 3,
+    "type": "algorithm_problem",
+    "category": "编程",
+    "difficulty": "困难",
+    "question": "给定一个由字符'1'和'0'组成的二维字符地图，其中'1'表示陆地，'0'表示水域。岛屿是由相邻的陆地连接形成的，相邻是指水平或垂直方向。请计算地图中最大岛屿的面积。\n\n地图示例：\n```\n[\n  ['1','1','0','0','0'],\n  ['1','1','0','0','0'],\n  ['0','0','1','0','0'],\n  ['0','0','0','1','1']\n]\n```\n\n要求：\n1. 实现算法计算最大岛屿面积\n2. 分析时间和空间复杂度\n3. 处理边界情况（空地图、全是水域、全是陆地）",
+    "content": "给定一个由字符'1'和'0'组成的二维字符地图，其中'1'表示陆地，'0'表示水域。岛屿是由相邻的陆地连接形成的，相邻是指水平或垂直方向。请计算地图中最大岛屿的面积。\n\n地图示例：\n```\n[\n  ['1','1','0','0','0'],\n  ['1','1','0','0','0'],\n  ['0','0','1','0','0'],\n  ['0','0','0','1','1']\n]\n```\n\n要求：\n1. 实现算法计算最大岛屿面积\n2. 分析时间和空间复杂度\n3. 处理边界情况（空地图、全是水域、全是陆地）"
+  },
+  {
+    "id": 4,
+    "type": "chinese_programming",
+    "category": "编程",
+    "difficulty": "中等", 
+    "question": "中文编程示例：\n\n```python\n# 中文变量和函数名示例\n学生成绩 = [85, 92, 78, 96, 88]\n班级人数 = len(学生成绩)\n\ndef 计算平均分(成绩列表):\n    总分 = sum(成绩列表)\n    平均分 = 总分 / len(成绩列表)\n    return 平均分\n\ndef 统计等级(分数):\n    if 分数 >= 90:\n        return \"优秀\"\n    elif 分数 >= 80:\n        return \"良好\" \n    elif 分数 >= 60:\n        return \"及格\"\n    else:\n        return \"不及格\"\n\n# 计算班级平均分\n班级平均分 = 计算平均分(学生成绩)\nprint(f\"班级平均分：{班级平均分}\")\n\n# 统计各个学生的等级\nfor i, 成绩 in enumerate(学生成绩):\n    等级 = 统计等级(成绩)\n    print(f\"学生{i+1}：{成绩}分，等级：{等级}\")\n```\n\n基于以上中文编程示例，请推导以下代码的输出结果：\n\n```python\n新学生成绩 = [95, 87, 92, 76, 89, 94]\n新班级平均分 = 计算平均分(新学生成绩)\nprint(f\"新班级平均分：{新班级平均分}\")\n\n优秀学生数 = 0\nfor 成绩 in 新学生成绩:\n    if 统计等级(成绩) == \"优秀\":\n        优秀学生数 += 1\n        \nprint(f\"优秀学生人数：{优秀学生数}\")\n```\n\n要求：\n1. 计算并给出完整的输出结果\n2. 解释计算过程\n3. 分析中文编程的优缺点",
+    "content": "中文编程示例：\n\n```python\n# 中文变量和函数名示例\n学生成绩 = [85, 92, 78, 96, 88]\n班级人数 = len(学生成绩)\n\ndef 计算平均分(成绩列表):\n    总分 = sum(成绩列表)\n    平均分 = 总分 / len(成绩列表)\n    return 平均分\n\ndef 统计等级(分数):\n    if 分数 >= 90:\n        return \"优秀\"\n    elif 分数 >= 80:\n        return \"良好\" \n    elif 分数 >= 60:\n        return \"及格\"\n    else:\n        return \"不及格\"\n\n# 计算班级平均分\n班级平均分 = 计算平均分(学生成绩)\nprint(f\"班级平均分：{班级平均分}\")\n\n# 统计各个学生的等级\nfor i, 成绩 in enumerate(学生成绩):\n    等级 = 统计等级(成绩)\n    print(f\"学生{i+1}：{成绩}分，等级：{等级}\")\n```\n\n基于以上中文编程示例，请推导以下代码的输出结果：\n\n```python\n新学生成绩 = [95, 87, 92, 76, 89, 94]\n新班级平均分 = 计算平均分(新学生成绩)\nprint(f\"新班级平均分：{新班级平均分}\")\n\n优秀学生数 = 0\nfor 成绩 in 新学生成绩:\n    if 统计等级(成绩) == \"优秀\":\n        优秀学生数 += 1\n        \nprint(f\"优秀学生人数：{优秀学生数}\")\n```\n\n要求：\n1. 计算并给出完整的输出结果\n2. 解释计算过程\n3. 分析中文编程的优缺点"
+  },
+  {
+    "id": 5,
+    "type": "code_commenting",
+    "category": "编程",
+    "difficulty": "简单",
+    "question": "以下是一个快速排序算法的Python实现，但缺少注释。请为代码添加详细的注释，包括函数说明、参数说明、算法步骤和关键逻辑解释：\n\n```python\ndef quicksort(arr, low, high):\n    if low < high:\n        pi = partition(arr, low, high)\n        quicksort(arr, low, pi - 1)\n        quicksort(arr, pi + 1, high)\n\ndef partition(arr, low, high):\n    pivot = arr[high]\n    i = low - 1\n    \n    for j in range(low, high):\n        if arr[j] <= pivot:\n            i += 1\n            arr[i], arr[j] = arr[j], arr[i]\n    \n    arr[i + 1], arr[high] = arr[high], arr[i + 1]\n    return i + 1\n\ndef quick_sort(arr):\n    if len(arr) <= 1:\n        return arr\n    quicksort(arr, 0, len(arr) - 1)\n    return arr\n\narr = [64, 34, 25, 12, 22, 11, 90]\nprint(\"原数组:\", arr)\nsorted_arr = quick_sort(arr.copy())\nprint(\"排序后:\", sorted_arr)\n```\n\n要求：\n1. 为每个函数添加文档字符串（docstring）\n2. 为关键代码行添加行内注释\n3. 解释快速排序的基本原理和时间复杂度",
+    "content": "以下是一个快速排序算法的Python实现，但缺少注释。请为代码添加详细的注释，包括函数说明、参数说明、算法步骤和关键逻辑解释：\n\n```python\ndef quicksort(arr, low, high):\n    if low < high:\n        pi = partition(arr, low, high)\n        quicksort(arr, low, pi - 1)\n        quicksort(arr, pi + 1, high)\n\ndef partition(arr, low, high):\n    pivot = arr[high]\n    i = low - 1\n    \n    for j in range(low, high):\n        if arr[j] <= pivot:\n            i += 1\n            arr[i], arr[j] = arr[j], arr[i]\n    \n    arr[i + 1], arr[high] = arr[high], arr[i + 1]\n    return i + 1\n\ndef quick_sort(arr):\n    if len(arr) <= 1:\n        return arr\n    quicksort(arr, 0, len(arr) - 1)\n    return arr\n\narr = [64, 34, 25, 12, 22, 11, 90]\nprint(\"原数组:\", arr)\nsorted_arr = quick_sort(arr.copy())\nprint(\"排序后:\", sorted_arr)\n```\n\n要求：\n1. 为每个函数添加文档字符串（docstring）\n2. 为关键代码行添加行内注释\n3. 解释快速排序的基本原理和时间复杂度"
+  }
+] 
