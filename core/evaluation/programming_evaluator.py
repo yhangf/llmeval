@@ -20,7 +20,6 @@ class ProgrammingEvaluator:
         self.prompt_loader = prompt_loader
         self.score_calculator = ScoreCalculator()
     
-
     
     async def evaluate_programming_response(self, question_data: dict, model_answer: str,
                                           standard_answer: str, evaluator_model, logger=None) -> Dict[str, Any]:
