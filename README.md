@@ -243,7 +243,7 @@ curl http://localhost:8000/api/tasks
 ```json
 {
   "default_config": {
-    "max_tokens": 1000,
+    "max_tokens": 4000,
     "temperature": 0.7,
     "top_p": 1.0,
     "frequency_penalty": 0.0,

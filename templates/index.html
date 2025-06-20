@@ -108,7 +108,7 @@
                                         <div class="col-md-6">
                                             <label for="maxTokens" class="form-label">最大Token数</label>
                                             <input type="number" class="form-control" id="maxTokens" 
-                                                   value="1000" min="100" max="4000">
+                                                   value="4000" min="100" max="4000">
                                         </div>
                                     </div>
                                     
@@ -258,12 +258,12 @@
                                 <form id="addModelForm">
                                     <div class="mb-3">
                                         <label for="modelName" class="form-label">模型名称</label>
-                                        <input type="text" class="form-control" id="modelName" required>
+                                        <input type="text" class="form-control" id="modelName" name="modelName" required>
                                     </div>
                                     
                                     <div class="mb-3">
                                         <label for="modelProvider" class="form-label">提供商</label>
-                                        <select class="form-select" id="modelProvider" required>
+                                        <select class="form-select" id="modelProvider" name="modelProvider" required>
                                             <option value="">选择提供商</option>
                                             <option value="openai">OpenAI</option>
                                             <option value="custom">自定义API</option>
@@ -273,17 +273,17 @@
                                     
                                     <div class="mb-3">
                                         <label for="modelId" class="form-label">模型ID</label>
-                                        <input type="text" class="form-control" id="modelId" required>
+                                        <input type="text" class="form-control" id="modelId" name="modelId" required>
                                     </div>
                                     
                                     <div class="mb-3">
                                         <label for="apiKey" class="form-label">API密钥</label>
-                                        <input type="password" class="form-control" id="apiKey" required>
+                                        <input type="password" class="form-control" id="apiKey" name="apiKey" required>
                                     </div>
                                     
                                     <div class="mb-3" id="baseUrlGroup" style="display: none;">
                                         <label for="baseUrl" class="form-label">API地址</label>
-                                        <input type="url" class="form-control" id="baseUrl">
+                                        <input type="url" class="form-control" id="baseUrl" name="baseUrl">
                                     </div>
                                     
                                     <div class="d-grid">

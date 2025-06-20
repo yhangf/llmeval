@@ -104,7 +104,7 @@ class EvaluationApp {
             question_file: document.getElementById('questionSet')?.value,
             config: {
                 temperature: parseFloat(document.getElementById('temperature')?.value || '0.7'),
-                max_tokens: parseInt(document.getElementById('maxTokens')?.value || '1000')
+                max_tokens: parseInt(document.getElementById('maxTokens')?.value || '4000')
             }
         };
 
@@ -132,6 +132,29 @@ class EvaluationApp {
         try {
             await this.modelManager.addModel(formData);
             form.reset();
+        } catch (error) {
+            // 错误已在modelManager中处理
+        }
+    }
+
+    /**
+     * 删除模型
+     */
+    async deleteModel(modelName) {
+        // 显示确认对话框
+        const confirmed = await this.showConfirmDialog(
+            '确认删除模型',
+            `确定要删除模型 "${modelName}" 吗？此操作无法撤销。`,
+            '删除',
+            'danger'
+        );
+
+        if (!confirmed) {
+            return;
+        }
+
+        try {
+            await this.modelManager.deleteModel(modelName);
         } catch (error) {
             // 错误已在modelManager中处理
         }
@@ -291,6 +314,56 @@ class EvaluationApp {
      */
     downloadResults(taskId) {
         this.notificationManager.info('下载功能开发中...');
+    }
+
+    /**
+     * 显示确认对话框
+     */
+    async showConfirmDialog(title, message, confirmText = '确认', type = 'primary') {
+        return new Promise((resolve) => {
+            // 创建模态框
+            const modalId = 'confirmModal_' + Date.now();
+            const modal = document.createElement('div');
+            modal.className = 'modal fade';
+            modal.id = modalId;
+            modal.innerHTML = `
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">${title}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>${message}</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                            <button type="button" class="btn btn-${type}" id="confirmBtn">
+                                ${confirmText}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+
+            // 绑定事件
+            const confirmBtn = modal.querySelector('#confirmBtn');
+            const modalElement = new bootstrap.Modal(modal);
+
+            confirmBtn.addEventListener('click', () => {
+                modalElement.hide();
+                resolve(true);
+            });
+
+            modal.addEventListener('hidden.bs.modal', () => {
+                document.body.removeChild(modal);
+                resolve(false);
+            });
+
+            modalElement.show();
+        });
     }
 
 }

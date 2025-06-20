@@ -78,12 +78,12 @@ class OpenAIModel(BaseModel):
                     }
                 ]
             }, ensure_ascii=False, indent=2))
-            print(f"🔧 请求参数: model={self.model_id}, max_tokens={kwargs.get('max_tokens', self.config.get('max_tokens', 1000))}, temperature={kwargs.get('temperature', self.config.get('temperature', 0.7))}")
+            print(f"🔧 请求参数: model={self.model_id}, max_tokens={kwargs.get('max_tokens', self.config.get('max_tokens', 4000))}, temperature={kwargs.get('temperature', self.config.get('temperature', 0.7))}")
             
             response = await self.client.chat.completions.create(
                 model=self.model_id,
                 messages=messages,
-                max_tokens=kwargs.get('max_tokens', self.config.get('max_tokens', 1000)),
+                max_tokens=kwargs.get('max_tokens', self.config.get('max_tokens', 4000)),
                 temperature=kwargs.get('temperature', self.config.get('temperature', 0.7)),
                 **{k: v for k, v in kwargs.items() if k not in ['max_tokens', 'temperature']}
             )
@@ -144,7 +144,7 @@ class CustomAPIModel(BaseModel):
             data = {
                 "model": self.model_id,
                 "messages": [{"role": "user", "content": prompt}],
-                "max_tokens": kwargs.get('max_tokens', self.config.get('max_tokens', 1000)),
+                "max_tokens": kwargs.get('max_tokens', self.config.get('max_tokens', 4000)),
                 "temperature": kwargs.get('temperature', self.config.get('temperature', 0.7))
             }
             
@@ -298,14 +298,14 @@ class AgentModel(BaseModel):
                     model=self.model_id,
                     messages=messages,
                     tools=self.tools,
-                    max_tokens=kwargs.get('max_tokens', self.config.get('max_tokens', 1000)),
+                    max_tokens=kwargs.get('max_tokens', self.config.get('max_tokens', 4000)),
                     temperature=kwargs.get('temperature', self.config.get('temperature', 0.7))
                 )
             else:
                 response = await self.client.chat.completions.create(
                     model=self.model_id,
                     messages=messages,
-                    max_tokens=kwargs.get('max_tokens', self.config.get('max_tokens', 1000)),
+                    max_tokens=kwargs.get('max_tokens', self.config.get('max_tokens', 4000)),
                     temperature=kwargs.get('temperature', self.config.get('temperature', 0.7))
                 )
             
@@ -405,22 +405,22 @@ class ModelManager:
     
     def add_model(self, name: str, provider: str, model_id: str, 
                   api_key: str, base_url: Optional[str] = None, **kwargs):
-            """动态添加模型"""
-            provider = provider.lower()
-            
-            if provider == 'openai':
-                model = OpenAIModel(name, model_id, api_key, base_url, **kwargs)
-            elif provider == 'custom':
-                if not base_url:
-                    raise ValueError("自定义API模型需要指定base_url")
-                model = CustomAPIModel(name, model_id, api_key, base_url, **kwargs)
-            elif provider == 'agent':
-                model = AgentModel(name, model_id, api_key, base_url, **kwargs)
-            else:
-                raise ValueError(f"不支持的模型提供商: {provider}")
-            
-            self.models[name] = model
-            print(f"成功添加模型: {name}")
+        """动态添加模型"""
+        provider = provider.lower()
+        
+        if provider == 'openai':
+            model = OpenAIModel(name, model_id, api_key, base_url, **kwargs)
+        elif provider == 'custom':
+            if not base_url:
+                raise ValueError("自定义API模型需要指定base_url")
+            model = CustomAPIModel(name, model_id, api_key, base_url, **kwargs)
+        elif provider == 'agent':
+            model = AgentModel(name, model_id, api_key, base_url, **kwargs)
+        else:
+            raise ValueError(f"不支持的模型提供商: {provider}")
+        
+        self.models[name] = model
+        print(f"成功添加模型: {name}")
         
     def get_model(self, name: str) -> Optional[BaseModel]:
         """获取模型实例"""

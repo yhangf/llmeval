@@ -157,6 +157,13 @@ class EvaluationApp {
                         <div class="text-end">
                             <small class="text-muted">Token: ${model.stats.token_count}</small><br>
                             <small class="text-muted">请求: ${model.stats.request_count}</small>
+                            <div class="mt-2">
+                                <button class="btn btn-outline-danger btn-sm" 
+                                        onclick="deleteModel('${model.name.replace(/'/g, '\\\'')}')"
+                                        title="删除模型">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1002,9 +1009,17 @@ class EvaluationApp {
             name: formData.get('modelName'),
             provider: formData.get('modelProvider'),
             model_id: formData.get('modelId'),
-            api_key: formData.get('apiKey'),
-            base_url: formData.get('baseUrl') || null
+            api_key: formData.get('apiKey') || null,
+            base_url: formData.get('baseUrl') || null,
+            max_tokens: 4000,
+            temperature: 0.7
         };
+
+        // 验证必需字段
+        if (!config.name || !config.provider || !config.model_id) {
+            this.showNotification('请填写所有必需字段：模型名称、提供商和模型ID', 'error');
+            return;
+        }
 
         try {
             const response = await fetch('/api/models', {
@@ -1344,4 +1359,31 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // 全局函数（供HTML调用）
 window.refreshTasks = () => app.refreshTasks();
-window.app = app; 
+window.app = app;
+
+window.deleteModel = async function(modelName) {
+    // 显示确认对话框
+    const confirmed = confirm(`确定要删除模型 "${modelName}" 吗？此操作无法撤销。`);
+    
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/models/${encodeURIComponent(modelName)}`, {
+            method: 'DELETE'
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+            app.showNotification('模型删除成功', 'success');
+            app.loadModels(); // 重新加载模型列表
+        } else {
+            throw new Error(data.message || '删除模型失败');
+        }
+    } catch (error) {
+        console.error('删除模型失败:', error);
+        app.showNotification('删除模型失败: ' + error.message, 'error');
+    }
+}; 

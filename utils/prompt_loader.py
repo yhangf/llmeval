@@ -526,6 +526,7 @@ class PromptLoader:
 - 函数名必须为 calculate_vacation_dates
 - 参数必须为 year 和 total_vacation_days
 - 返回格式必须为 ['YYYY-MM-DD', ...] 的日期列表
-- 确保测试用例 year=2023, total_vacation_days=10 的输出正确，把测试用例的结果输出在回答中"""
+- 确保测试用例 year=2023, total_vacation_days=10 的输出正确
+- 把测试用例的结果输出在回答中,确保回答中包含['2023-01-19', '2023-02-06', ......]的格式"""
         
         return prompt 

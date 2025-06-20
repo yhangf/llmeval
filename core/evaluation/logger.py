@@ -316,21 +316,28 @@ class EvaluationLogger:
                     }
                     conversation.append(user_message)
                     
-                    # 查找模型的生成回答（不是评估回答）
+                    # 查找所有模型的交互（包括待评估模型和评估模型）
                     for interaction in question_data["model_interactions"]:
-                        if (interaction["type"] == "response" and 
-                            interaction.get("response_type") in ["generation", "待评估模型回答"] and
-                            not interaction.get("error")):
+                        if interaction["type"] == "response" and not interaction.get("error"):
+                            response_type = interaction.get("response_type", "")
                             
-                            assistant_message = {
-                                "role": "assistant", 
-                                "content": interaction["content"]
-                            }
-                            conversation.append(assistant_message)
-                            break  # 只取第一个有效的生成回答
+                            if response_type in ["generation", "待评估模型回答"]:
+                                # 待评估模型的回答
+                                assistant_message = {
+                                    "role": "assistant", 
+                                    "content": interaction["content"]
+                                }
+                                conversation.append(assistant_message)
+                            elif response_type in ["编程评估结果", "evaluation"]:
+                                # 评估模型的回答
+                                evaluator_message = {
+                                    "role": "evaluator",
+                                    "content": interaction["content"]
+                                }
+                                conversation.append(evaluator_message)
                     
-                    # 只有当对话包含用户和助手消息时才添加
-                    if len(conversation) == 2:
+                    # 只有当对话包含用户消息时才添加（可能包含assistant和evaluator的回答）
+                    if len(conversation) >= 2:  # 至少包含user和一个回答
                         simplified_data["conversations"].append({
                             "question_id": question_data["question_id"],
                             "messages": conversation
@@ -344,7 +351,10 @@ class EvaluationLogger:
                 
                 # 统计信息
                 total_conversations = len(simplified_data["conversations"])
+                total_messages = sum(len(conv["messages"]) for conv in simplified_data["conversations"])
+                
                 self.logger.info(f"   对话数量: {total_conversations}")
+                self.logger.info(f"   消息总数: {total_messages}")
                 self.logger.info(f"   文件大小: {os.path.getsize(self.current_json_file) / 1024:.1f} KB")
                 
             except Exception as e:

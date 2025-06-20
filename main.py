@@ -11,7 +11,9 @@ from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.requests import Request
-from pydantic import BaseModel
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel, ValidationError
 from typing import List, Dict, Any, Optional
 import json
 import os
@@ -41,6 +43,19 @@ task_manager = TaskManager()
 data_loader = DataLoader()
 prompt_loader = PromptLoader()
 evaluator = Evaluator(model_manager, prompt_loader)
+
+# 添加全局异常处理器
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    """处理请求验证错误"""
+    print(f"请求验证错误: {exc}")
+    return JSONResponse(
+        status_code=422,
+        content={
+            "detail": f"请求数据验证失败: {str(exc)}",
+            "errors": exc.errors()
+        }
+    )
 
 def get_matching_answer_file(question_file: str) -> str:
     """根据问题集文件名自动匹配对应的答案集文件"""
@@ -81,7 +96,7 @@ class ModelConfig(BaseModel):
     api_key: Optional[str] = None
     base_url: Optional[str] = None
     model_id: str
-    max_tokens: int = 1000
+    max_tokens: int = 4000
     temperature: float = 0.7
 
 @app.get("/")
@@ -107,6 +122,16 @@ async def get_models() -> Dict[str, Any]:
 async def add_model(config: ModelConfig) -> Dict[str, Any]:
     """添加新模型配置"""
     try:
+        print(f"收到模型配置: {config}")
+        
+        # 验证必需字段
+        if not config.name.strip():
+            raise ValueError("模型名称不能为空")
+        if not config.provider.strip():
+            raise ValueError("提供商不能为空")
+        if not config.model_id.strip():
+            raise ValueError("模型ID不能为空")
+        
         model_manager.add_model(
             name=config.name,
             provider=config.provider,
@@ -120,8 +145,49 @@ async def add_model(config: ModelConfig) -> Dict[str, Any]:
             "success": True,
             "message": f"模型 {config.name} 添加成功"
         }
+    except ValueError as e:
+        print(f"验证错误: {str(e)}")
+        raise HTTPException(status_code=422, detail=str(e))
     except Exception as e:
+        print(f"添加模型失败: {str(e)}")
         raise HTTPException(status_code=400, detail=f"添加模型失败: {str(e)}")
+
+@app.delete("/api/models/{model_name}")
+async def delete_model(model_name: str) -> Dict[str, Any]:
+    """删除模型配置"""
+    try:
+        print(f"=== 删除模型API被调用 ===")
+        print(f"接收到的模型名称: '{model_name}'")
+        print(f"当前所有模型: {list(model_manager.models.keys())}")
+        
+        # 检查模型是否存在
+        has_model = model_manager.has_model(model_name)
+        print(f"模型是否存在: {has_model}")
+        
+        if not has_model:
+            print(f"模型 '{model_name}' 不存在，返回404")
+            raise HTTPException(status_code=404, detail=f"模型 {model_name} 不存在")
+        
+        # 删除模型
+        print(f"开始删除模型: {model_name}")
+        success = model_manager.remove_model(model_name)
+        print(f"删除结果: {success}")
+        
+        if success:
+            print(f"模型 {model_name} 删除成功")
+            return {
+                "success": True,
+                "message": f"模型 {model_name} 删除成功"
+            }
+        else:
+            print(f"删除模型 {model_name} 失败")
+            raise HTTPException(status_code=400, detail=f"删除模型 {model_name} 失败")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"删除模型异常: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"删除模型失败: {str(e)}")
 
 @app.get("/api/questions")
 async def get_questions() -> Dict[str, Any]:

@@ -83,6 +83,13 @@ class UIComponents {
                         <div class="text-end">
                             <small class="text-muted">Token: ${model.stats.token_count}</small><br>
                             <small class="text-muted">请求: ${model.stats.request_count}</small>
+                            <div class="mt-2">
+                                <button class="btn btn-outline-danger btn-sm" 
+                                        onclick="app.deleteModel('${model.name.replace(/'/g, '\\\'')}')"
+                                        title="删除模型">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

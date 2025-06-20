@@ -23,7 +23,9 @@ class ApiManager {
             const data = await response.json();
             
             if (!response.ok) {
-                throw new Error(data.message || `HTTP ${response.status}`);
+                const errorMessage = data.detail || data.message || `HTTP ${response.status}`;
+                console.error(`API错误详情 [${url}]:`, data);
+                throw new Error(errorMessage);
             }
             
             return data;
@@ -47,6 +49,15 @@ class ApiManager {
         return this.request('/api/models', {
             method: 'POST',
             body: JSON.stringify(config)
+        });
+    }
+
+    /**
+     * 删除模型
+     */
+    async deleteModel(modelName) {
+        return this.request(`/api/models/${encodeURIComponent(modelName)}`, {
+            method: 'DELETE'
         });
     }
 

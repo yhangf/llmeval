@@ -40,9 +40,9 @@ class ProgrammingEvaluator:
             await asyncio.sleep(1)  # 避免API限制
             
             # 记录评估模型请求
-            # if logger:
-            #     logger.log_model_request(evaluator_model.__class__.__name__, prompt, 
-            #                            {"max_tokens": 500, "temperature": 0.1})
+            if logger:
+                logger.log_model_request(evaluator_model.__class__.__name__, prompt, 
+                                       {"max_tokens": 5000, "temperature": 0.7})
             
             response = await evaluator_model.generate(prompt, max_tokens=5000, temperature=0.7)
             
