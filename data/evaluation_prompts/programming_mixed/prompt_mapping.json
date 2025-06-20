@@ -1,0 +1,36 @@
+{
+    "dataset_name": "programming_mixed",
+    "description": "混合编程问题评估提示映射（包含有标准答案和无标准答案的问题）",
+    "question_mappings": [
+        {
+            "question_id": 1,
+            "question_keywords": ["文本处理", "单词提取", "网址提取", "单词计数", "正则表达式"],
+            "prompt_file": "question_1_evaluation.txt",
+            "description": "文本处理任务：单词提取、网址提取、单词计数"
+        },
+        {
+            "question_id": 2,
+            "question_keywords": ["二分查找", "binary search", "有序数组", "索引位置"],
+            "prompt_file": "question_2_evaluation.txt",
+            "description": "二分查找算法实现"
+        },
+        {
+            "question_id": 3,
+            "question_keywords": ["快速排序", "quicksort", "分区", "递归"],
+            "prompt_file": "question_3_evaluation.txt",
+            "description": "快速排序算法实现"
+        },
+        {
+            "question_id": 4,
+            "question_keywords": ["学生成绩管理", "学生类", "成绩管理类", "平均分", "student grade management", "student class", "grade management"],
+            "prompt_file": "question_4_evaluation.txt",
+            "description": "学生成绩管理系统设计与实现"
+        },
+        {
+            "question_id": 5,
+            "question_keywords": ["年假计算", "日期计算", "vacation dates", "累积间隔"],
+            "prompt_file": "question_5_evaluation.txt",
+            "description": "年假累积日期计算函数"
+        }
+    ]
+} 

@@ -1,0 +1,13 @@
+{
+  "evaluation_prompt_v2": "请对以下回答进行详细评估：\n\n问题：{question}\n\n待评估回答：{answer}\n\n参考答案：{reference}\n\n请从以下维度进行评分（1-10分）：\n1. 准确性：回答内容是否正确\n2. 完整性：回答是否全面\n3. 相关性：回答是否切题\n4. 清晰性：表达是否清楚\n\n请按JSON格式输出：\n{\n  \"accuracy\": 分数,\n  \"completeness\": 分数,\n  \"relevance\": 分数,\n  \"clarity\": 分数,\n  \"overall\": 总分,\n  \"reasoning\": \"评分理由\"\n}",
+  
+  "simple_evaluation": "请为以下回答打分（1-10分）：\n\n问题：{question}\n回答：{answer}\n\n只需要返回一个1-10的分数。",
+  
+  "detailed_feedback": "请为以下回答提供详细反馈：\n\n问题：{question}\n回答：{answer}\n参考答案：{reference}\n\n请提供：\n1. 优点\n2. 不足\n3. 改进建议\n4. 总体评价",
+  
+  "chinese_evaluation": "请用中文评估以下回答：\n\n问题：{question}\n学生回答：{answer}\n标准答案：{reference}\n\n评估要求：\n- 内容准确性（30分）\n- 逻辑清晰度（25分）\n- 完整性（25分）\n- 语言表达（20分）\n\n请给出各项得分和总分（满分100分），并说明理由。",
+  
+  "programming_evaluation": "请评估以下编程相关回答：\n\n问题：{question}\n回答：{answer}\n参考答案：{reference}\n\n评估重点：\n- 代码正确性\n- 算法效率\n- 代码风格\n- 解释清晰度\n\n请给出1-10分的评分。",
+  
+  "ai_knowledge_evaluation": "作为AI专家，请评估以下回答：\n\n问题：{question}\n回答：{answer}\n参考答案：{reference}\n\n评估标准：\n- 技术概念准确性\n- 前沿性和时效性\n- 实用性\n- 深度和广度\n\n请给出专业评分（1-10分）和详细分析。"
+} 
