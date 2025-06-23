@@ -1,0 +1,30 @@
+请评估以下年假计算函数的完成情况：
+
+问题：计算年假产生日期的函数
+- 函数名为 calculate_vacation_dates
+- 输入参数：year（年份）和 total_vacation_days（年假天数）
+- 输出：该年年假刷新的日期列表，格式为 ['YYYY-MM-DD', ...]
+- 测试用例：当 year=2023, total_vacation_days=10 时，应输出20个日期
+
+模型回答：
+{model_answer}
+
+标准答案预期输出（year=2023, total_vacation_days=10）：
+{standard_answer}
+
+评估要求：
+1. 检查函数名是否为 calculate_vacation_dates
+2. 检查参数是否正确（year, total_vacation_days）
+3. 检查是否正确计算累积间隔（365天或366天除以2m）
+4. 检查日期格式是否为 YYYY-MM-DD
+5. 对于测试用例，输出必须与标准答案完全一致才算完成
+
+请按以下JSON格式返回评估结果，所有反馈必须使用中文：
+{
+    "sub_question_scores": [0, 0, 0, 0],  // 每个子问题的完成情况：函数定义、间隔计算、日期处理、输出格式
+    "requirement_completed": false,     // 是否完成需求（测试用例输出是否与标准答案一致）
+    "accuracy": 0,                     // 准确性分数
+    "completeness": 0,                 // 完整性分数  
+    "clarity": 75,                     // 清晰度分数
+    "feedback": "详细的中文评估反馈，说明函数实现的优缺点，特别是测试用例的输出是否正确"
+} 

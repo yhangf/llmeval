@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大模型测评系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="/static/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-cpu"></i> 大模型测评系统
+            </a>
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text" id="systemStatus">
+                    <i class="bi bi-circle-fill text-success"></i> 系统正常
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- 页面标题 -->
+        <div class="row">
+            <div class="col-12">
+                <h1 class="text-center mb-4">
+                    <i class="bi bi-graph-up"></i> 大模型评估平台
+                    <small class="text-muted d-block mt-2">AI Model Evaluation Platform</small>
+                </h1>
+            </div>
+        </div>
+
+        <!-- 功能导航标签 -->
+        <ul class="nav nav-tabs mb-4" id="mainTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="evaluation-tab" data-bs-toggle="tab" 
+                        data-bs-target="#evaluation" type="button" role="tab">
+                    <i class="bi bi-play-circle"></i> 开始评估
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tasks-tab" data-bs-toggle="tab" 
+                        data-bs-target="#tasks" type="button" role="tab">
+                    <i class="bi bi-list-task"></i> 任务管理
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="models-tab" data-bs-toggle="tab" 
+                        data-bs-target="#models" type="button" role="tab">
+                    <i class="bi bi-gear"></i> 模型管理
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="data-tab" data-bs-toggle="tab" 
+                        data-bs-target="#data" type="button" role="tab">
+                    <i class="bi bi-database"></i> 数据管理
+                </button>
+            </li>
+        </ul>
+
+        <!-- 标签页内容 -->
+        <div class="tab-content" id="mainTabContent">
+            <!-- 评估页面 -->
+            <div class="tab-pane fade show active" id="evaluation" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="bi bi-sliders"></i> 评估配置</h5>
+                            </div>
+                            <div class="card-body">
+                                <form id="evaluationForm">
+                                    <div class="mb-3">
+                                        <label for="targetModelSelect" class="form-label">待评估模型</label>
+                                        <select class="form-select" id="targetModelSelect" required>
+                                            <option value="">请选择待评估模型...</option>
+                                        </select>
+                                        <small class="text-muted">选择要被评估的模型</small>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="evaluatorModelSelect" class="form-label">评估模型</label>
+                                        <select class="form-select" id="evaluatorModelSelect" required>
+                                            <option value="">请选择评估模型...</option>
+                                        </select>
+                                        <small class="text-muted">选择用于评估回答质量的模型</small>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="questionSet" class="form-label">问题集</label>
+                                        <select class="form-select" id="questionSet" required>
+                                            <option value="sample_questions.json">默认问题集</option>
+                                        </select>
+                                    </div>
+                                    
+
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label for="temperature" class="form-label">温度参数</label>
+                                            <input type="range" class="form-range" id="temperature" 
+                                                   min="0" max="2" step="0.1" value="0.7">
+                                            <small class="text-muted">当前值: <span id="tempValue">0.7</span></small>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="maxTokens" class="form-label">最大Token数</label>
+                                            <input type="number" class="form-control" id="maxTokens" 
+                                                   value="4000" min="100" max="4000">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-4 d-grid">
+                                        <button type="submit" class="btn btn-primary btn-lg">
+                                            <i class="bi bi-play-fill"></i> 开始评估
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="bi bi-eye"></i> 问题预览</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="questionPreview">
+                                    <div class="text-center text-muted">
+                                        <i class="bi bi-question-circle fs-1"></i>
+                                        <p class="mt-2">选择问题集后显示预览</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 实时进度显示区域 -->
+                <div id="progressSection" class="mt-4" style="display: none;">
+                    <div class="card border-primary">
+                        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0">
+                                <i class="bi bi-arrow-repeat spin"></i>
+                                评估进度
+                            </h6>
+                            <button type="button" class="btn btn-sm btn-outline-light" onclick="app.hideProgress()">
+                                <i class="bi bi-x"></i>
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-2">
+                                <div class="d-flex justify-content-between">
+                                    <span id="progressTaskInfo">任务ID: -</span>
+                                    <span id="progressPercent">0%</span>
+                                </div>
+                            </div>
+                            <div class="progress mb-3" style="height: 12px;">
+                                <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated" 
+                                     style="width: 0%"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <small class="text-muted">
+                                        <i class="bi bi-cpu"></i> 
+                                        模型: <span id="progressModel">-</span>
+                                    </small>
+                                </div>
+                                <div class="col-md-6">
+                                    <small class="text-muted">
+                                        <i class="bi bi-clock"></i> 
+                                        状态: <span id="progressStatus">准备中...</span>
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="mt-2">
+                                <small class="text-muted">
+                                    <i class="bi bi-list-task"></i> 
+                                    当前: <span id="currentTask">等待开始...</span>
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 任务管理页面 -->
+            <div class="tab-pane fade" id="tasks" role="tabpanel">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5><i class="bi bi-list-task"></i> 任务列表</h5>
+                        <button class="btn btn-outline-primary btn-sm" onclick="refreshTasks()">
+                            <i class="bi bi-arrow-clockwise"></i> 刷新
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div id="tasksContainer">
+                            <div class="text-center text-muted">
+                                <i class="bi bi-hourglass-split fs-1"></i>
+                                <p class="mt-2">加载任务列表中...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 任务详情模态框 -->
+                <div class="modal fade" id="taskDetailModal" tabindex="-1">
+                    <div class="modal-dialog modal-xl">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">
+                                    <i class="bi bi-info-circle"></i> 任务详情
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body" id="taskDetailContent">
+                                <!-- 任务详情内容 -->
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                                <button type="button" class="btn btn-primary" onclick="app.downloadTaskResults()">
+                                    <i class="bi bi-download"></i> 导出结果
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 模型管理页面 -->
+            <div class="tab-pane fade" id="models" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="bi bi-cpu"></i> 已配置模型</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="modelsContainer">
+                                    <div class="text-center text-muted">
+                                        <i class="bi bi-gear fs-1"></i>
+                                        <p class="mt-2">加载模型列表中...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="bi bi-plus-circle"></i> 添加模型</h5>
+                            </div>
+                            <div class="card-body">
+                                <form id="addModelForm">
+                                    <div class="mb-3">
+                                        <label for="modelName" class="form-label">模型名称</label>
+                                        <input type="text" class="form-control" id="modelName" name="modelName" required>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="modelProvider" class="form-label">提供商</label>
+                                        <select class="form-select" id="modelProvider" name="modelProvider" required>
+                                            <option value="">选择提供商</option>
+                                            <option value="openai">OpenAI</option>
+                                            <option value="custom">自定义API</option>
+                                            <option value="agent">Agent模型</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="modelId" class="form-label">模型ID</label>
+                                        <input type="text" class="form-control" id="modelId" name="modelId" required>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="apiKey" class="form-label">API密钥</label>
+                                        <input type="password" class="form-control" id="apiKey" name="apiKey" required>
+                                    </div>
+                                    
+                                    <div class="mb-3" id="baseUrlGroup" style="display: none;">
+                                        <label for="baseUrl" class="form-label">API地址</label>
+                                        <input type="url" class="form-control" id="baseUrl" name="baseUrl">
+                                    </div>
+                                    
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn btn-success">
+                                            <i class="bi bi-plus"></i> 添加模型
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 数据管理页面 -->
+            <div class="tab-pane fade" id="data" role="tabpanel">
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="bi bi-question-circle"></i> 问题集管理</h5>
+                                <small class="text-muted">系统将自动匹配对应的答案集，无需手动选择</small>
+                            </div>
+                            <div class="card-body">
+                                <div id="questionSetsContainer">
+                                    <div class="text-center text-muted">
+                                        <i class="bi bi-file-text fs-1"></i>
+                                        <p class="mt-2">加载问题集中...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            <h6><i class="bi bi-info-circle"></i> 自动匹配规则</h6>
+                            <ul class="mb-0">
+                                <li><strong>programming_questions_mixed.json</strong> → programming_answers_mixed.json</li>
+                                <li><strong>programming_questions.json</strong> → programming_answers.json</li>
+                                <li><strong>sample_questions.json</strong> → sample_answers.json</li>
+                                <li>其他问题集将根据文件名规则自动匹配对应的答案集</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 进度模态框 -->
+    <div class="modal fade" id="progressModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-hourglass-split"></i> 评估进行中
+                    </h5>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between">
+                            <span>评估进度</span>
+                            <span id="progressPercent">0%</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                 id="progressBar" role="progressbar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted">
+                            任务ID: <span id="currentTaskId"></span>
+                        </small>
+                    </div>
+                    <div id="progressStatus" class="text-center">
+                        <i class="bi bi-arrow-repeat spin"></i> 正在初始化...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast 通知 -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="notificationToast" class="toast" role="alert">
+            <div class="toast-header">
+                <i class="bi bi-info-circle me-2"></i>
+                <strong class="me-auto">系统通知</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body" id="toastMessage">
+                <!-- 通知内容 -->
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- 使用模块化JavaScript -->
+    <script type="module" src="/static/js/app-main.js?v=2"></script>
+</body>
+</html> 

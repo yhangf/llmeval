@@ -1,0 +1,135 @@
+[
+    {
+        "id": 1,
+        "question": "给定以下文本，请完成三个任务：\n\ntext = \"\"\"\nCrowdStrike(https://www.crowdstrike.com/en-us/) Threat Hunting Report 2024 highlights the increase in living off the land exploits, insider threats, identity compromise, and cloud-specific threats as modern adversaries evolve to bypass traditional security solutions.\n\nAt Fal.Con 2024 (September 16-19 in Las Vegas), Arsen Darakdjian, Senior Vice President of Global Cybersecurity from Paramount, will join Suril Desai, our VP of Detection Engineering, in a breakout session(https://mktoab560139.com/) to discuss how technological innovations in deception technology are enabling security teams to defend against these stealthy threats.\n\nRead this blog to learn about this session and the role of cyber deception in the evolving threat landscape.\n\"\"\"\n\n1、输出text中所有的单词，并统一规约成小写形式\n2、输出text中的所有网址\n3、给定一个词threat，忽略大小写，计算其在text中出现的次数和对应的位置，位置序号从0开始",
+        "category": "编程",
+        "difficulty": "中等",
+        "type": "standard_answer",
+        "sub_questions": [
+            {
+                "id": "1.1",
+                "description": "输出text中所有的单词，并统一规约成小写形式",
+                "weight": 0.3
+            },
+            {
+                "id": "1.2", 
+                "description": "输出text中的所有网址",
+                "weight": 0.3
+            },
+            {
+                "id": "1.3",
+                "description": "计算threat在text中出现的次数和位置",
+                "weight": 0.4
+            }
+        ],
+        "evaluation_prompt": "请评估模型生成的代码是否正确完成了以下三个任务：\n1. 提取所有单词并转换为小写\n2. 提取所有网址\n3. 计算单词'threat'的出现次数和位置\n\n请检查代码的逻辑正确性、语法正确性和功能完整性。对于每个子任务，如果完成则计1分，未完成计0分。"
+    },
+    {
+        "id": 2,
+        "question": "请生成一个二分查找函数的代码，要求函数能在有序数组中查找指定元素，并返回其索引位置。如果元素不存在，返回-1。",
+        "category": "编程",
+        "difficulty": "中等",
+        "type": "no_standard_answer",
+        "sub_questions": [
+            {
+                "id": "2.1",
+                "description": "函数定义正确，包含必要的参数（数组、目标值）",
+                "weight": 0.2
+            },
+            {
+                "id": "2.2",
+                "description": "实现了二分查找的核心逻辑（中点计算、区间缩小）",
+                "weight": 0.4
+            },
+            {
+                "id": "2.3",
+                "description": "正确处理边界情况和返回值",
+                "weight": 0.2
+            },
+            {
+                "id": "2.4",
+                "description": "代码具有良好的可读性和注释",
+                "weight": 0.2
+            }
+        ]
+    },
+    {
+        "id": 3,
+        "question": "编写一个Python函数，实现快速排序算法。函数应该接受一个整数列表作为参数，返回排序后的列表。",
+        "category": "编程",
+        "difficulty": "中等",
+        "type": "standard_answer",
+        "sub_questions": [
+            {
+                "id": "3.1",
+                "description": "函数定义正确，参数和返回值符合要求",
+                "weight": 0.2
+            },
+            {
+                "id": "3.2",
+                "description": "实现了快速排序的核心逻辑（分区操作）",
+                "weight": 0.4
+            },
+            {
+                "id": "3.3",
+                "description": "递归调用正确，能处理边界情况",
+                "weight": 0.4
+            }
+        ],
+        "evaluation_prompt": "请评估模型生成的快速排序代码是否：\n1. 函数定义正确，参数和返回值符合要求\n2. 实现了快速排序的核心逻辑（选择基准元素、分区操作）\n3. 递归调用正确，能处理空列表等边界情况\n\n请检查代码的正确性和完整性。"
+    },
+    {
+        "id": 4,
+        "question": "设计并实现一个简单的学生成绩管理系统，包含学生类和成绩管理类。要求能够添加学生、录入成绩、计算平均分等功能。",
+        "category": "编程",
+        "difficulty": "困难",
+        "type": "no_standard_answer",
+        "sub_questions": [
+            {
+                "id": "4.1",
+                "description": "正确定义学生类，包含必要的属性和方法",
+                "weight": 0.3
+            },
+            {
+                "id": "4.2",
+                "description": "实现成绩管理类，包含添加学生、录入成绩等功能",
+                "weight": 0.4
+            },
+            {
+                "id": "4.3",
+                "description": "能够正确计算和显示统计信息（如平均分）",
+                "weight": 0.3
+            }
+        ]
+    },
+    {
+        "id": 5,
+        "question": "假设某公司每年有m天年假，每当年假天数累积到半天系统就会刷新一次，请写一个计算年假产生日期的函数。\n\n要求：\n1. 函数名为 calculate_vacation_dates\n2. 输入参数：year（年份）和 total_vacation_days（年假天数）\n3. 输出：该年年假刷新的日期列表，格式为 ['YYYY-MM-DD', ...]\n4. 测试用例：当 year=2023, total_vacation_days=10 时，应输出20个日期\n\n逻辑说明：\n- m天年假意味着有2m次半天累积（每半天刷新一次）\n- 累积间隔 = 一年总天数 / (2m)\n- 从1月1日开始，每隔相应天数产生一次刷新日期",
+        "category": "编程",
+        "difficulty": "困难",
+        "type": "standard_answer",
+        "sub_questions": [
+            {
+                "id": "5.1",
+                "description": "函数定义正确，包含必要的参数（年份、年假天数）",
+                "weight": 0.2
+            },
+            {
+                "id": "5.2",
+                "description": "正确计算累积间隔（考虑平年闰年）",
+                "weight": 0.3
+            },
+            {
+                "id": "5.3",
+                "description": "正确实现日期累加逻辑（跨月、跨年处理）",
+                "weight": 0.3
+            },
+            {
+                "id": "5.4",
+                "description": "输出格式正确，测试用例结果准确",
+                "weight": 0.2
+            }
+        ],
+        "evaluation_prompt": "请评估模型生成的年假计算代码是否：\n1. 函数定义正确，参数和返回值符合要求\n2. 正确计算累积间隔（365天或366天除以2m）\n3. 正确实现日期累加，能处理跨月跨年\n4. 输出格式为YYYY-MM-DD，测试用例year=2023, total_vacation_days=10时输出20个正确日期\n\n请特别检查测试用例的输出是否与标准答案一致。"
+    }
+] 
