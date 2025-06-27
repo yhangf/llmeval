@@ -131,5 +131,155 @@
             }
         ],
         "evaluation_prompt": "请评估模型生成的年假计算代码是否：\n1. 函数定义正确，参数和返回值符合要求\n2. 正确计算累积间隔（365天或366天除以2m）\n3. 正确实现日期累加，能处理跨月跨年\n4. 输出格式为YYYY-MM-DD，测试用例year=2023, total_vacation_days=10时输出20个正确日期\n\n请特别检查测试用例的输出是否与标准答案一致。"
+    },
+    {
+        "id": 6,
+        "question": "请实现检测字符串中元音字母的最快方法。\n\n**测试输入数据**: \"Programming\"\n**预期输出**: True（因为包含元音字母 'o' 和 'a'）\n\n要求：\n1. 实现一个函数来检测字符串中是否包含元音字母\n2. 函数应该接受一个字符串参数，返回布尔值（True表示包含元音，False表示不包含）\n3. 元音字母包括：a, e, i, o, u（大小写均可）\n4. 要求实现最快的算法，考虑时间复杂度和实际性能\n5. 在代码末尾添加测试代码，使用测试输入\"Programming\"验证方法\n\n**提示**: 最优解法的关键在于遍历较短的序列。考虑元音字母只有10个字符（大小写），而输入字符串可能很长。\n\n**输出格式要求**：\n```python\ndef fastest_vowel_check(s):\n    \"\"\"检测字符串中是否包含元音字母的最快方法\"\"\"\n    # 实现最优算法\n    return result\n\n# 测试代码\ntest_input = \"Programming\"\nresult = fastest_vowel_check(test_input)\nprint(f\"测试输入: '{test_input}'\")\nprint(f\"结果: {result}\")\nprint(f\"预期: True\")\nprint(f\"测试{'通过' if result == True else '失败'}\")\n```\n\n请实现最快的检测方法，并简要说明为什么这种方法是最优的。",
+        "category": "编程",
+        "difficulty": "中等",
+        "type": "standard_answer",
+        "sub_questions": [
+            {
+                "id": "6.1",
+                "description": "提供了基本的循环方法（for循环、while循环等）",
+                "weight": 0.2
+            },
+            {
+                "id": "6.2",
+                "description": "使用了Python内置函数和特性（any、set、generator等）",
+                "weight": 0.3
+            },
+            {
+                "id": "6.3",
+                "description": "实现了高级方法（正则表达式、递归、函数式编程等）",
+                "weight": 0.3
+            },
+            {
+                "id": "6.4",
+                "description": "代码格式规范，函数定义正确，注释清晰",
+                "weight": 0.2
+            }
+        ],
+        "evaluation_prompt": "请评估模型提供的检测元音字母的方法数量和质量：\n\n评分标准：\n- 1-3种方法：60分\n- 4-6种方法：70分\n- 7-9种方法：80分\n- 10-11种方法：90分\n- 11种以上方法：100分\n\n额外考虑因素：\n1. 每个函数定义是否正确\n2. 实现逻辑是否正确\n3. 是否包含多样化的方法（循环、集合、正则、递归、函数式等）\n4. 代码格式是否规范\n5. 注释是否清晰\n\n请统计模型提供的有效方法数量，并根据质量给出相应分数。"
+    },
+    {
+        "id": 7,
+        "question": "Redis集群代码中存在并发安全问题，请分析并修复以下代码。\n\n**问题描述**: 在cluster.c中，`clusterSendPing()`函数未加锁导致节点状态不一致\n\n**初始代码** (cluster.c):\n```c\nvoid clusterSendPing(clusterLink *link, int type) {\n    if (node->flags & REDIS_NODE_MYSELF) {\n        node->flags |= REDIS_NODE_PFAIL; // 无锁修改共享状态\n    }\n}\n```\n\n**测试场景**: 多线程环境下同时调用此函数可能导致节点状态不一致\n\n要求：\n1. 分析并发安全问题的根本原因\n2. 提供修复方案，使用适当的锁机制保护共享状态\n3. 说明为什么选择这种锁机制（如自旋锁vs互斥锁）\n4. 考虑性能影响和锁的粒度\n5. 提供修复后的完整代码\n\n**输出格式要求**：\n```c\n// 问题分析\n/* \n原因：...\n影响：...\n*/\n\n// 修复方案\nvoid clusterSendPing(clusterLink *link, int type) {\n    // 添加锁保护\n    // 修复后的代码\n}\n\n// 解释说明\n/* \n锁机制选择：...\n性能考虑：...\n*/\n```\n\n请提供完整的分析和修复方案。",
+        "category": "编程",
+        "difficulty": "困难",
+        "type": "standard_answer",
+        "sub_questions": [
+            {
+                "id": "7.1",
+                "description": "正确分析了并发安全问题的根本原因",
+                "weight": 0.25
+            },
+            {
+                "id": "7.2",
+                "description": "提供了正确的锁机制修复方案",
+                "weight": 0.35
+            },
+            {
+                "id": "7.3",
+                "description": "合理解释了锁机制的选择理由",
+                "weight": 0.25
+            },
+            {
+                "id": "7.4",
+                "description": "考虑了性能影响和代码完整性",
+                "weight": 0.15
+            }
+        ],
+        "evaluation_prompt": "请评估模型对Redis集群并发安全问题的分析和修复方案：\n\n评估标准：\n1. 问题分析是否准确（识别出race condition和共享状态修改问题）\n2. 修复方案是否正确（正确使用锁保护临界区）\n3. 锁机制选择是否合理（自旋锁适合短时间持有）\n4. 是否考虑了性能影响和锁粒度\n5. 代码格式和注释是否清晰\n\n重点检查：\n- 是否识别出node->flags的并发修改问题\n- 是否正确使用clusterLock()/clusterUnlock()\n- 是否解释了自旋锁的优势\n- 代码是否完整可用"
+    },
+    {
+        "id": 8,
+        "question": "客流量上限分配问题\n\n**问题描述**：\n一家连锁旅馆在全国拥有2025个分店，分别编号为1至2025。随着节日临近，总部决定为每家分店设定每日客流量的上限，分别记作A₁, A₂, …, A₂₀₂₅。这些上限并非随意分配，而是需要满足以下约束条件：\n\n1. A₁, A₂, …, A₂₀₂₅ 必须是1至2025的一个排列，即每个Aᵢ均是1至2025之间的整数，且所有Aᵢ互不相同。\n\n2. 对于任意分店i和j（1≤i,j≤2025，i可等于j），它们的客流量上限Aᵢ和Aⱼ的乘积不得超过i×j+2025，即：Aᵢ × Aⱼ ≤ i×j + 2025\n\n这些约束旨在平衡各分店客流压力，确保服务质量和运营稳定性。\n\n**要求**：\n1. 分析问题的数学性质和约束条件\n2. 设计算法求解满足条件的分配方案数量\n3. 实现代码计算结果，并对10⁹+7取模\n4. 解释算法的时间复杂度和空间复杂度\n5. 提供完整的代码实现和测试\n\n**输出格式要求**：\n```python\ndef solve_hotel_assignment():\n    \"\"\"计算客流量上限分配方案数量\"\"\"\n    # 问题分析和算法实现\n    n = 2025\n    MOD = 10**9 + 7\n    \n    # 算法实现\n    # ...\n    \n    return result % MOD\n\n# 测试代码\nresult = solve_hotel_assignment()\nprint(f\"满足条件的分配方案数量: {result}\")\nprint(f\"算法复杂度分析: ...\")\n```\n\n请提供完整的数学分析、算法设计和代码实现。特别注意：请使用c++实现代码。",
+        "category": "编程",
+        "difficulty": "困难",
+        "type": "standard_answer",
+        "sub_questions": [
+            {
+                "id": "8.1",
+                "description": "正确分析问题的数学性质和约束条件",
+                "weight": 0.25
+            },
+            {
+                "id": "8.2",
+                "description": "设计了正确的算法求解方案",
+                "weight": 0.35
+            },
+            {
+                "id": "8.3",
+                "description": "实现了完整可运行的代码",
+                "weight": 0.25
+            },
+            {
+                "id": "8.4",
+                "description": "提供了复杂度分析和优化思路",
+                "weight": 0.15
+            }
+        ],
+        "evaluation_prompt": "请评估模型对客流量上限分配问题的分析和解决方案：\n\n评估标准：\n1. 数学分析是否正确（理解排列约束和乘积约束）\n2. 算法设计是否合理（动态规划、回溯、数学推导等）\n3. 代码实现是否完整可运行\n4. 是否正确处理大数模运算\n5. 复杂度分析是否准确\n\n重点检查：\n- 是否理解了排列和约束条件\n- 算法是否能正确求解\n- 代码是否处理了模运算\n- 是否有时间复杂度分析"
+    },
+    {
+        "id": 9,
+        "question": "逃离高塔\n\n**问题描述**：\n小蓝一觉醒来，发现自己被困在一座高耸的塔中。这座塔共有2025层，每一层都刻有一个数字的立方值，从底层的1³、2³、3³、⋯，一直到顶层的2025³，层层叠叠，直入云霄。塔顶有一扇门，门旁刻着一行字：\n\n\"若想离开此塔，需找出这些立方数中个位数字为3的数的个数。\"\n\n小蓝非常着急，因为他需要尽快离开这座塔，去参加即将到来的蓝桥杯比赛。时间紧迫，请你帮助他解答这个问题。\n\n**要求**：\n1. 使用Java实现解决方案\n2. 计算1³到2025³中，个位数字为3的立方数的个数\n3. 必须包含import java.util.Scanner;\n4. 主类名必须为fvvb\n5. 输出最终的计数结果\n6. 如果答案不正确，将被判定为未完全满足需求\n\n**测试数据**：\n- 输入范围：1 ≤ i ≤ 2025\n- 需要统计：i³的个位数字等于3的i的个数\n- 预期结果：202\n\n**输出格式要求**：\n```java\nimport java.util.Scanner;\n\npublic class fvvb {\n    public static void main(String[] args) {\n        Scanner scanner = new Scanner(System.in);\n        // 实现代码\n        System.out.println(ans); // 输出结果\n    }\n}\n```\n\n请提供完整的Java代码实现，确保能正确计算出结果202。",
+        "category": "编程",
+        "difficulty": "简单",
+        "type": "standard_answer",
+        "sub_questions": [
+            {
+                "id": "9.1",
+                "description": "Java语法正确，包含必要的import和类定义",
+                "weight": 0.2
+            },
+            {
+                "id": "9.2",
+                "description": "正确实现了立方数计算和个位数判断逻辑",
+                "weight": 0.4
+            },
+            {
+                "id": "9.3",
+                "description": "循环范围正确（1到2025），计数逻辑准确",
+                "weight": 0.3
+            },
+            {
+                "id": "9.4",
+                "description": "输出格式正确，结果为202",
+                "weight": 0.1
+            }
+        ],
+        "evaluation_prompt": "请评估模型提供的Java代码解决方案：\n\n评估标准：\n1. Java语法是否正确（import语句、类定义、main方法）\n2. 算法逻辑是否正确（立方计算、个位数判断、计数统计）\n3. 循环实现是否准确（范围1-2025，循环变量使用）\n4. 输出结果是否正确（必须为202）\n\n**严格要求**：\n- 如果最终输出结果不是202，直接判定为未完全满足需求\n- 代码必须能编译运行\n- 必须使用指定的类名fvvb\n- 必须包含Scanner导入\n\n重点检查：\n- 立方数计算：i * i * i 或 Math.pow(i, 3)\n- 个位数判断：res % 10 == 3\n- 计数逻辑：正确的ans++\n- 最终结果：System.out.println(ans)输出202"
+    },
+    {
+        "id": 10,
+        "question": "银行账户系统并发访问问题\n\n**问题描述**：\n在多线程环境下，银行账户系统存在并发访问安全问题。以下原始代码在多线程同时操作时会出现竞态条件，导致账户余额错误。\n\n**问题分析**：\n1. **共享资源竞争**：balance 是共享资源，多个线程同时修改 balance 会导致竞态条件（race condition），可能导致账户余额错误\n2. **线程安全**：deposit 和 withdraw 方法在多线程中并不是线程安全的\n3. **日志记录**：没有适当的日志记录，调试时难以追踪问题\n\n**原始代码**：\n```python\nimport threading\nimport time\n\nclass BankAccount:\n    def __init__(self, balance):\n        self.balance = balance\n\n    def deposit(self, amount):\n        self.balance += amount\n        print(f\"Deposited {amount}. New balance: {self.balance}\")\n\n    def withdraw(self, amount):\n        if self.balance >= amount:\n            self.balance -= amount\n            print(f\"Withdrew {amount}. New balance: {self.balance}\")\n        else:\n            print(f\"Insufficient funds for withdrawal of {amount}.\")\n\ndef perform_transactions(account, deposit_amount, withdraw_amount):\n    account.deposit(deposit_amount)\n    account.withdraw(withdraw_amount)\n\nif __name__ == \"__main__\":\n    account = BankAccount(1000)  # Initial balance of 1000\n    threads = []\n\n    for i in range(5):  # Creating 5 threads to simulate transactions\n        t = threading.Thread(target=perform_transactions, args=(account, 200, 150))\n        threads.append(t)\n        t.start()\n\n    for t in threads:\n        t.join()\n\n    print(f\"Final balance: {account.balance}\")\n```\n\n**要求**：\n1. 分析并发安全问题的根本原因\n2. 使用threading.Lock()实现线程安全的解决方案\n3. 添加logging模块进行日志记录，替换print语句\n4. 实现事务管理和错误处理\n5. 添加测试用例验证多线程安全性\n6. 提供完整的修复后代码，确保最终余额正确\n\n**关键改进点**：\n- 使用 `threading.Lock()` 确保多线程安全\n- 使用 `logging` 模块记录每个操作，提供实时反馈\n- 通过简单的断言检查账户余额是否符合预期\n- 最终余额应该仍为1000（每个线程存200取150，净增50，5个线程共增250，1000+250=1250）\n\n**输出格式要求**：\n```python\nimport threading\nimport time\nimport logging\n\n# 配置日志\nlogging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')\n\nclass BankAccount:\n    def __init__(self, balance):\n        self.balance = balance\n        self.lock = threading.Lock()  # 线程锁\n\n    def deposit(self, amount):\n        # 实现线程安全的存款方法\n        pass\n\n    def withdraw(self, amount):\n        # 实现线程安全的取款方法\n        pass\n\ndef perform_transactions(account, deposit_amount, withdraw_amount):\n    # 实现事务处理\n    pass\n\ndef test_bank_account():\n    # 实现测试用例\n    pass\n\nif __name__ == \"__main__\":\n    test_bank_account()\n```\n\n请提供完整的线程安全银行账户系统实现，包括问题分析、解决方案和测试验证。",
+        "category": "编程",
+        "difficulty": "中等",
+        "type": "standard_answer",
+        "sub_questions": [
+            {
+                "id": "10.1",
+                "description": "正确分析了并发安全问题的根本原因（竞态条件、共享资源）",
+                "weight": 0.2
+            },
+            {
+                "id": "10.2",
+                "description": "正确实现了threading.Lock()线程安全机制",
+                "weight": 0.3
+            },
+            {
+                "id": "10.3",
+                "description": "正确使用logging模块替换print，提供完整的日志记录",
+                "weight": 0.2
+            },
+            {
+                "id": "10.4",
+                "description": "实现了完整的测试用例和余额验证逻辑",
+                "weight": 0.3
+            }
+        ],
+        "evaluation_prompt": "请评估模型对银行账户并发访问问题的分析和解决方案：\n\n评估标准：\n1. 问题分析是否准确（识别出race condition和共享资源竞争问题）\n2. 线程安全实现是否正确（正确使用with self.lock保护临界区）\n3. 日志系统是否完整（使用logging.info/warning替换print）\n4. 测试验证是否有效（多线程测试、余额断言）\n5. 代码结构是否完整可运行\n\n重点检查：\n- 是否识别出balance的并发修改问题\n- 是否正确使用with self.lock:保护存取款操作\n- 是否正确配置和使用logging模块\n- 是否实现了有效的测试用例验证线程安全性\n- 最终余额计算是否正确（应为1250：1000 + 5*(200-150)）"
     }
 ] 

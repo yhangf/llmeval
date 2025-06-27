@@ -59,6 +59,12 @@
                     <i class="bi bi-database"></i> 数据管理
                 </button>
             </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="comparison-tab" data-bs-toggle="tab" 
+                        data-bs-target="#comparison" type="button" role="tab">
+                    <i class="bi bi-bar-chart"></i> 模型对比
+                </button>
+            </li>
         </ul>
 
         <!-- 标签页内容 -->
@@ -228,6 +234,31 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- 自定义任务详情模态框 -->
+                <div class="custom-modal" id="customTaskDetailModal">
+                    <div class="custom-modal-dialog">
+                        <div class="custom-modal-header">
+                            <h5 class="custom-modal-title">
+                                <i class="bi bi-info-circle"></i> 任务详情
+                            </h5>
+                            <button type="button" class="custom-modal-close" onclick="closeCustomModal()">
+                                <i class="bi bi-x"></i>
+                            </button>
+                        </div>
+                        <div class="custom-modal-body" id="customTaskDetailContent">
+                            <!-- 任务详情内容 -->
+                        </div>
+                        <div class="custom-modal-footer">
+                            <button type="button" class="btn btn-secondary" onclick="closeCustomModal()">
+                                <i class="bi bi-x-circle"></i> 关闭
+                            </button>
+                            <button type="button" class="btn btn-primary" onclick="downloadCustomModalResults()">
+                                <i class="bi bi-download"></i> 导出结果
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- 模型管理页面 -->
@@ -267,13 +298,17 @@
                                             <option value="">选择提供商</option>
                                             <option value="openai">OpenAI</option>
                                             <option value="custom">自定义API</option>
+                                            <option value="qianwen">通义千问</option>
                                             <option value="agent">Agent模型</option>
                                         </select>
                                     </div>
                                     
                                     <div class="mb-3">
                                         <label for="modelId" class="form-label">模型ID</label>
-                                        <input type="text" class="form-control" id="modelId" name="modelId" required>
+                                        <input type="text" class="form-control" id="modelId" name="modelId" required placeholder="例如：qwen-turbo, gpt-4, claude-3-sonnet-20240229">
+                                        <small class="form-text text-muted">
+                                            输入对应提供商的模型ID
+                                        </small>
                                     </div>
                                     
                                     <div class="mb-3">
@@ -300,8 +335,8 @@
 
             <!-- 数据管理页面 -->
             <div class="tab-pane fade" id="data" role="tabpanel">
-                <div class="row justify-content-center">
-                    <div class="col-md-8">
+                <div class="row">
+                    <div class="col-12">
                         <div class="card">
                             <div class="card-header">
                                 <h5><i class="bi bi-question-circle"></i> 问题集管理</h5>
@@ -329,6 +364,29 @@
                                 <li><strong>sample_questions.json</strong> → sample_answers.json</li>
                                 <li>其他问题集将根据文件名规则自动匹配对应的答案集</li>
                             </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 模型对比页面 -->
+            <div class="tab-pane fade" id="comparison" role="tabpanel">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5><i class="bi bi-bar-chart"></i> 模型评估对比</h5>
+                            <small class="text-muted">对比不同模型的评估结果和性能表现</small>
+                        </div>
+                        <button class="btn btn-outline-primary btn-sm" onclick="refreshModelEvaluations()">
+                            <i class="bi bi-arrow-clockwise"></i> 刷新数据
+                        </button>
+                    </div>
+                    <div class="card-body p-0">
+                        <div id="modelEvaluationsContainer">
+                            <div class="text-center text-muted p-4">
+                                <i class="bi bi-bar-chart fs-1"></i>
+                                <p class="mt-2">加载模型评估数据中...</p>
+                            </div>
                         </div>
                     </div>
                 </div>

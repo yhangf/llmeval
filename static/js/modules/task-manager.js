@@ -254,263 +254,124 @@ class TaskManager {
      */
     async viewTaskDetail(taskId) {
         try {
-            const data = await this.apiManager.getTask(taskId);
+            const response = await this.apiManager.getTask(taskId);
             
-            if (data.success) {
-                this.showTaskDetailModal(data.data);
-            } else {
-                throw new Error(data.message || '获取任务详情失败');
+            if (!response.success) {
+                this.notificationManager.error('获取任务详情失败: ' + (response.message || response.error));
+                return;
             }
+
+            const task = response.data;
+
+            // 生成任务详情HTML
+            const detailHtml = this.uiComponents.generateTaskDetailHtml(task);
+            
+            // 更新模态框内容
+            const modalContent = document.getElementById('taskDetailContent');
+            if (!modalContent) {
+                console.error('找不到taskDetailContent元素');
+                this.notificationManager.error('系统错误：模态框内容区域未找到');
+                return;
+            }
+            
+            modalContent.innerHTML = detailHtml;
+
+            // 保存当前任务详情，用于导出功能
+            this.currentTaskDetail = task;
+
+            // 检查Bootstrap是否可用
+            if (typeof bootstrap === 'undefined') {
+                this.notificationManager.error('系统错误：Bootstrap未加载');
+                return;
+            }
+
+            // 获取模态框元素
+            const modalElement = document.getElementById('taskDetailModal');
+            if (!modalElement) {
+                this.notificationManager.error('系统错误：模态框元素未找到');
+                return;
+            }
+            
+            // 创建并显示模态框
+            const modal = new bootstrap.Modal(modalElement, {
+                keyboard: true,
+                backdrop: true,
+                focus: true
+            });
+            
+            // 显示模态框
+            modal.show();
+            
         } catch (error) {
             console.error('查看任务详情失败:', error);
-            this.notificationManager.error('查看任务详情失败');
+            this.notificationManager.error('查看任务详情失败: ' + error.message);
         }
     }
 
     /**
-     * 显示任务详情模态框
+     * 删除任务
      */
-    showTaskDetailModal(task) {
-        console.log('显示任务详情:', task);
-        const content = document.getElementById('taskDetailContent');
-        if (!content) {
-            console.warn('任务详情内容容器未找到');
+    async deleteTask(taskId) {
+        if (!confirm('确定要删除这个任务吗？')) {
+            return;
+        }
+
+        try {
+            const data = await this.apiManager.deleteTask(taskId);
+            
+            if (data.success) {
+                this.notificationManager.success('任务已删除');
+                return true;
+            } else {
+                throw new Error(data.message || '删除任务失败');
+            }
+        } catch (error) {
+            console.error('删除任务失败:', error);
+            this.notificationManager.error('删除任务失败');
+            throw error;
+        }
+    }
+
+    /**
+     * 导出任务结果
+     */
+    downloadTaskResults() {
+        if (!this.currentTaskDetail || !this.currentTaskDetail.results) {
+            this.notificationManager.warning('没有可导出的结果');
             return;
         }
         
-        this.currentTaskDetail = task; // 保存当前任务详情，用于导出
+        const data = {
+            task_info: {
+                task_id: this.currentTaskDetail.task_id,
+                target_model_name: this.currentTaskDetail.target_model_name,
+                evaluator_model_name: this.currentTaskDetail.evaluator_model_name,
+                created_at: this.currentTaskDetail.created_at,
+                question_file: this.currentTaskDetail.question_file,
+                answer_file: this.currentTaskDetail.answer_file
+            },
+            results: this.currentTaskDetail.results
+        };
         
-        let resultsHtml = '';
-        let detailTableHtml = '';
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `evaluation_results_${this.currentTaskDetail.task_id}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
         
-        if (task.results && task.results.summary) {
-            const summary = task.results.summary;
-            const results = task.results.results || [];
-            
-            // 汇总统计
-            resultsHtml = this.generateSummaryHtml(summary);
-            
-            // 详细结果表格
-            if (results.length > 0) {
-                detailTableHtml = this.generateDetailTableHtml(results);
-            }
-        }
-
-        content.innerHTML = `
-            <div class="mb-4">
-                <h6><i class="bi bi-info-circle"></i> 任务信息</h6>
-                <div class="row">
-                    <div class="col-md-6">
-                        <ul class="list-unstyled">
-                            <li><strong>任务ID:</strong> <code>${task.task_id}</code></li>
-                            <li><strong>待评估模型:</strong> <span class="badge bg-primary">${task.target_model_name || task.model_name}</span></li>
-                            <li><strong>评估模型:</strong> <span class="badge bg-success">${task.evaluator_model_name || '程序评估'}</span></li>
-                            <li><strong>状态:</strong> <span class="badge ${this.uiComponents.getStatusBadgeClass(task.status)}">${this.uiComponents.getStatusText(task.status)}</span></li>
-                        </ul>
-                    </div>
-                    <div class="col-md-6">
-                        <ul class="list-unstyled">
-                            <li><strong>创建时间:</strong> ${new Date(task.created_at).toLocaleString()}</li>
-                            <li><strong>问题集:</strong> <code>${task.question_file}</code></li>
-                            <li><strong>答案集:</strong> <code>${task.answer_file}</code></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            
-            ${task.status === 'completed' && resultsHtml ? `
-                <div class="mb-4">
-                    <h6><i class="bi bi-bar-chart"></i> 评估结果汇总</h6>
-                    ${resultsHtml}
-                </div>
-                ${detailTableHtml}
-            ` : ''}
-            
-            ${task.error ? `
-                <div class="mb-3">
-                    <h6><i class="bi bi-exclamation-triangle"></i> 错误信息</h6>
-                    <div class="alert alert-danger">${task.error}</div>
-                </div>
-            ` : ''}
-        `;
-
-        const modal = new bootstrap.Modal(document.getElementById('taskDetailModal'));
-        modal.show();
-    }
-
-    /**
-     * 生成汇总统计HTML
-     */
-    generateSummaryHtml(summary) {
-        return `
-            <div class="row mb-4">
-                <div class="col-md-4">
-                    <div class="card bg-light">
-                        <div class="card-body text-center">
-                            <h5 class="card-title text-primary">${summary.total_questions}</h5>
-                            <p class="card-text">总问题数</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card bg-light">
-                        <div class="card-body text-center">
-                            <h5 class="card-title text-info">${summary.total_tokens}</h5>
-                            <p class="card-text">总Token数</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card bg-light">
-                        <div class="card-body text-center">
-                            <h5 class="card-title text-success">${Math.round(summary.average_tokens_per_question)}</h5>
-                            <p class="card-text">平均Token/题</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            ${summary.score_statistics && summary.score_statistics.overall ? `
-                <div class="row mb-4">
-                    <div class="col-md-3">
-                        <div class="card border-success">
-                            <div class="card-body text-center">
-                                <h5 class="card-title text-success">${(summary.score_statistics.overall.mean || 0).toFixed(1)}</h5>
-                                <p class="card-text">平均分</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card border-primary">
-                            <div class="card-body text-center">
-                                <h5 class="card-title text-primary">${(summary.score_statistics.overall.max || 0).toFixed(1)}</h5>
-                                <p class="card-text">最高分</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card border-warning">
-                            <div class="card-body text-center">
-                                <h5 class="card-title text-warning">${(summary.score_statistics.overall.min || 0).toFixed(1)}</h5>
-                                <p class="card-text">最低分</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card border-info">
-                            <div class="card-body text-center">
-                                <h5 class="card-title text-info">${(summary.score_statistics.overall.std || 0).toFixed(1)}</h5>
-                                <p class="card-text">标准差</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            ` : '<div class="alert alert-info">暂无评分统计数据</div>'}
-        `;
-    }
-
-    /**
-     * 生成详细结果表格HTML
-     */
-    generateDetailTableHtml(results) {
-        return `
-            <div class="mt-4">
-                <h6><i class="bi bi-table"></i> 详细评估结果</h6>
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>题号</th>
-                                <th>问题</th>
-                                <th>准确性</th>
-                                <th>完整性</th>
-                                <th>清晰度</th>
-                                <th>总分</th>
-                                <th>完成需求</th>
-                                <th>Token数</th>
-                                <th>操作</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${results.map((result, index) => {
-                                // 安全检查
-                                const questionId = result.question_id || 'N/A';
-                                const question = result.question || '无问题内容';
-                                const tokensUsed = result.tokens_used || 0;
-                                
-                                // 检查评估结果
-                                const evaluation = result.evaluation || {};
-                                const scores = evaluation.scores || {};
-                                const accuracy = scores.accuracy || 0;
-                                const completeness = scores.completeness || 0;
-                                const clarity = scores.clarity || 0;
-                                const overall = scores.overall || 0;
-                                
-                                // 判断是否完成需求 - 编程题优先检查requirement_completed，其他题目基于总分判断
-                                let requirementCompleted = false;
-                                if (evaluation.requirement_completed !== undefined) {
-                                    // 编程题有专门的需求完成标记
-                                    requirementCompleted = evaluation.requirement_completed;
-                                } else {
-                                    // 其他题目基于总分判断（>=7分算完成需求）
-                                    requirementCompleted = overall >= 7.0;
-                                }
-                                
-                                return `
-                                <tr>
-                                    <td><span class="badge bg-secondary">${questionId}</span></td>
-                                    <td>
-                                        <div class="text-truncate" style="max-width: 200px;" 
-                                             title="${question.replace(/"/g, '&quot;')}">
-                                            ${question}
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="badge ${this.uiComponents.getScoreBadgeClass(accuracy)}">
-                                            ${accuracy.toFixed(1)}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span class="badge ${this.uiComponents.getScoreBadgeClass(completeness)}">
-                                            ${completeness.toFixed(1)}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span class="badge ${this.uiComponents.getScoreBadgeClass(clarity)}">
-                                            ${clarity.toFixed(1)}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span class="badge ${this.uiComponents.getScoreBadgeClass(overall)} fs-6">
-                                            ${overall.toFixed(1)}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span class="badge ${requirementCompleted ? 'bg-success' : 'bg-danger'}">
-                                            ${requirementCompleted ? '✓ 已完成' : '✗ 未完成'}
-                                        </span>
-                                    </td>
-                                    <td><small class="text-muted">${tokensUsed}</small></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-outline-primary" 
-                                                onclick="app.taskManager.showQuestionDetail(${index})">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                `;
-                            }).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        `;
+        this.notificationManager.success('结果已导出');
     }
 
     /**
      * 显示问题详情
      */
     showQuestionDetail(index) {
+        console.log('显示问题详情，索引:', index);
+        
         if (!this.currentTaskDetail || !this.currentTaskDetail.results) {
             this.notificationManager.error('没有可显示的任务详情');
             return;
@@ -670,64 +531,6 @@ class TaskManager {
         modal.addEventListener('hidden.bs.modal', () => {
             document.body.removeChild(modal);
         });
-    }
-
-    /**
-     * 删除任务
-     */
-    async deleteTask(taskId) {
-        if (!confirm('确定要删除这个任务吗？')) {
-            return;
-        }
-
-        try {
-            const data = await this.apiManager.deleteTask(taskId);
-            
-            if (data.success) {
-                this.notificationManager.success('任务已删除');
-                return true;
-            } else {
-                throw new Error(data.message || '删除任务失败');
-            }
-        } catch (error) {
-            console.error('删除任务失败:', error);
-            this.notificationManager.error('删除任务失败');
-            throw error;
-        }
-    }
-
-    /**
-     * 导出任务结果
-     */
-    downloadTaskResults() {
-        if (!this.currentTaskDetail || !this.currentTaskDetail.results) {
-            this.notificationManager.warning('没有可导出的结果');
-            return;
-        }
-        
-        const data = {
-            task_info: {
-                task_id: this.currentTaskDetail.task_id,
-                target_model_name: this.currentTaskDetail.target_model_name,
-                evaluator_model_name: this.currentTaskDetail.evaluator_model_name,
-                created_at: this.currentTaskDetail.created_at,
-                question_file: this.currentTaskDetail.question_file,
-                answer_file: this.currentTaskDetail.answer_file
-            },
-            results: this.currentTaskDetail.results
-        };
-        
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `evaluation_results_${this.currentTaskDetail.task_id}.json`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        
-        this.notificationManager.success('结果已导出');
     }
 }
 

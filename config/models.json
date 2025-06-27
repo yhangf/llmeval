@@ -12,7 +12,7 @@
     },
     {
       "name": "gpt-3.5-turbo",
-      "provider": "openai", 
+      "provider": "openai",
       "model_id": "gpt-3.5-turbo",
       "api_key": "",
       "base_url": null,
@@ -31,14 +31,34 @@
       "description": "Anthropic Claude-3 Sonnet，平衡性能和速度"
     },
     {
-      "name": "通义千问",
+      "name": "通义千问-Turbo",
       "provider": "custom",
       "model_id": "qwen-turbo",
       "api_key": "",
       "base_url": "https://dashscope.aliyuncs.com/api/v1",
       "max_tokens": 1500,
       "temperature": 0.7,
-      "description": "阿里云通义千问模型，中文理解能力强"
+      "description": "阿里云通义千问Turbo模型，速度快，成本低"
+    },
+    {
+      "name": "通义千问-Plus",
+      "provider": "custom",
+      "model_id": "qwen-plus",
+      "api_key": "",
+      "base_url": "https://dashscope.aliyuncs.com/api/v1",
+      "max_tokens": 2000,
+      "temperature": 0.7,
+      "description": "阿里云通义千问Plus模型，平衡性能和成本"
+    },
+    {
+      "name": "通义千问-Max",
+      "provider": "custom",
+      "model_id": "qwen-max",
+      "api_key": "",
+      "base_url": "https://dashscope.aliyuncs.com/api/v1",
+      "max_tokens": 2000,
+      "temperature": 0.7,
+      "description": "阿里云通义千问Max模型，最强性能"
     },
     {
       "name": "deepseek-chat",
@@ -72,12 +92,14 @@
                   "description": "搜索关键词"
                 }
               },
-              "required": ["query"]
+              "required": [
+                "query"
+              ]
             }
           }
         },
         {
-          "type": "function", 
+          "type": "function",
           "function": {
             "name": "calculate",
             "description": "执行数学计算",
@@ -89,12 +111,24 @@
                   "description": "数学表达式"
                 }
               },
-              "required": ["expression"]
+              "required": [
+                "expression"
+              ]
             }
           }
         }
       ],
       "description": "支持工具调用的GPT-4 Agent，可以搜索和计算"
+    },
+    {
+      "name": "deepseek-chat-auto",
+      "provider": "openai",
+      "model_id": "1",
+      "api_key": "1",
+      "base_url": null,
+      "max_tokens": 4000,
+      "temperature": 0.7,
+      "description": "Openai 1 模型"
     }
   ],
   "default_config": {
@@ -106,20 +140,20 @@
   },
   "cost_estimation": {
     "gpt-4": {
-      "input_cost_per_token": 0.00003,
-      "output_cost_per_token": 0.00006
+      "input_cost_per_token": 3e-05,
+      "output_cost_per_token": 6e-05
     },
     "gpt-3.5-turbo": {
-      "input_cost_per_token": 0.0000015,
-      "output_cost_per_token": 0.000002
+      "input_cost_per_token": 1.5e-06,
+      "output_cost_per_token": 2e-06
     },
     "claude-3-sonnet": {
-      "input_cost_per_token": 0.000015,
-      "output_cost_per_token": 0.000075
+      "input_cost_per_token": 1.5e-05,
+      "output_cost_per_token": 7.5e-05
     },
     "default": {
-      "input_cost_per_token": 0.00001,
-      "output_cost_per_token": 0.00002
+      "input_cost_per_token": 1e-05,
+      "output_cost_per_token": 2e-05
     }
   }
-} 
+}

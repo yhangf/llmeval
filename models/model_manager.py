@@ -422,6 +422,9 @@ class ModelManager:
         self.models[name] = model
         print(f"成功添加模型: {name}")
         
+        # 保存到配置文件
+        self.save_model_to_config(name, provider, model_id, api_key, base_url, **kwargs)
+        
     def get_model(self, name: str) -> Optional[BaseModel]:
         """获取模型实例"""
         return self.models.get(name)
@@ -446,8 +449,103 @@ class ModelManager:
         """移除模型"""
         if name in self.models:
             del self.models[name]
+            # 从配置文件中移除
+            self.remove_model_from_config(name)
             return True
         return False
+    
+    def save_model_to_config(self, name: str, provider: str, model_id: str, 
+                           api_key: str, base_url: Optional[str] = None, **kwargs):
+        """保存模型配置到文件"""
+        try:
+            # 确保配置目录存在
+            os.makedirs(os.path.dirname(self.config_file), exist_ok=True)
+            
+            # 加载现有配置
+            config = {"models": []}
+            if os.path.exists(self.config_file):
+                try:
+                    with open(self.config_file, 'r', encoding='utf-8') as f:
+                        config = json.load(f)
+                except Exception as e:
+                    print(f"读取配置文件失败，将创建新配置: {e}")
+            
+            # 检查是否已存在同名模型
+            existing_models = config.get('models', [])
+            model_exists = False
+            for i, existing_model in enumerate(existing_models):
+                if existing_model.get('name') == name:
+                    # 更新现有模型配置
+                    existing_models[i] = {
+                        "name": name,
+                        "provider": provider,
+                        "model_id": model_id,
+                        "api_key": api_key,
+                        "base_url": base_url,
+                        "max_tokens": kwargs.get('max_tokens', 4000),
+                        "temperature": kwargs.get('temperature', 0.7),
+                        "description": kwargs.get('description', f"{provider.title()} {model_id} 模型")
+                    }
+                    model_exists = True
+                    break
+            
+            # 如果不存在，添加新模型
+            if not model_exists:
+                new_model_config = {
+                    "name": name,
+                    "provider": provider,
+                    "model_id": model_id,
+                    "api_key": api_key,
+                    "base_url": base_url,
+                    "max_tokens": kwargs.get('max_tokens', 4000),
+                    "temperature": kwargs.get('temperature', 0.7),
+                    "description": kwargs.get('description', f"{provider.title()} {model_id} 模型")
+                }
+                existing_models.append(new_model_config)
+            
+            config['models'] = existing_models
+            
+            # 确保包含默认配置
+            if 'default_config' not in config:
+                config['default_config'] = {
+                    "max_tokens": 4000,
+                    "temperature": 0.7,
+                    "top_p": 1.0,
+                    "frequency_penalty": 0.0,
+                    "presence_penalty": 0.0
+                }
+            
+            # 保存配置文件
+            with open(self.config_file, 'w', encoding='utf-8') as f:
+                json.dump(config, f, ensure_ascii=False, indent=2)
+            
+            print(f"模型配置已保存到 {self.config_file}")
+            
+        except Exception as e:
+            print(f"保存模型配置失败: {e}")
+            raise e
+    
+    def remove_model_from_config(self, name: str):
+        """从配置文件中移除模型"""
+        try:
+            if not os.path.exists(self.config_file):
+                return
+            
+            with open(self.config_file, 'r', encoding='utf-8') as f:
+                config = json.load(f)
+            
+            # 移除指定模型
+            models = config.get('models', [])
+            config['models'] = [m for m in models if m.get('name') != name]
+            
+            # 保存更新后的配置
+            with open(self.config_file, 'w', encoding='utf-8') as f:
+                json.dump(config, f, ensure_ascii=False, indent=2)
+            
+            print(f"已从配置文件中移除模型: {name}")
+            
+        except Exception as e:
+            print(f"从配置文件移除模型失败: {e}")
     
     async def test_model(self, name: str, test_prompt: str = "你好") -> Dict[str, Any]:
         """测试模型是否正常工作"""

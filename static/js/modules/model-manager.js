@@ -8,7 +8,27 @@ class ModelManager {
         this.uiComponents = uiComponents;
         this.notificationManager = notificationManager;
         this.models = [];
+        
+        // 预设API地址配置
+        this.baseUrlOptions = {
+            qianwen: 'https://dashscope.aliyuncs.com/api/v1',
+            custom: ''
+        };
+        
+        this.initializeEventListeners();
     }
+
+    /**
+     * 初始化事件监听器
+     */
+    initializeEventListeners() {
+        // 提供商选择变化时切换Base URL字段
+        document.getElementById('modelProvider')?.addEventListener('change', (e) => {
+            this.toggleBaseUrlField(e.target.value);
+        });
+    }
+
+
 
     /**
      * 加载模型列表
@@ -36,18 +56,21 @@ class ModelManager {
      * 添加模型
      */
     async addModel(formData) {
-        // 调试：检查FormData内容
-        console.log('FormData内容:');
-        for (let [key, value] of formData.entries()) {
-            console.log(`  ${key}: "${value}"`);
+        // 处理通义千问提供商，将其转换为custom类型
+        let provider = formData.get('modelProvider');
+        let baseUrl = formData.get('baseUrl');
+        
+        if (provider === 'qianwen') {
+            provider = 'custom';
+            baseUrl = baseUrl || 'https://dashscope.aliyuncs.com/api/v1';
         }
 
         const config = {
             name: formData.get('modelName'),
-            provider: formData.get('modelProvider'),
+            provider: provider,
             model_id: formData.get('modelId'),
             api_key: formData.get('apiKey') || null,
-            base_url: formData.get('baseUrl') || null,
+            base_url: baseUrl || null,
             max_tokens: 4000,
             temperature: 0.7
         };
@@ -57,8 +80,12 @@ class ModelManager {
             throw new Error('请填写所有必需字段：模型名称、提供商和模型ID');
         }
 
-        // 调试：打印发送的配置
-        console.log('准备发送的模型配置:', config);
+        // 验证API密钥
+        if (!config.api_key) {
+            throw new Error('请输入API密钥');
+        }
+
+        console.log('添加模型配置:', config);
 
         try {
             const data = await this.apiManager.addModel(config);
@@ -125,7 +152,27 @@ class ModelManager {
      * 切换Base URL字段显示
      */
     toggleBaseUrlField(provider) {
-        this.uiComponents.toggleBaseUrlField(provider);
+        const baseUrlGroup = document.getElementById('baseUrlGroup');
+        const baseUrlInput = document.getElementById('baseUrl');
+        
+        if (!baseUrlGroup) return;
+        
+        if (provider === 'custom' || provider === 'qianwen') {
+            baseUrlGroup.style.display = 'block';
+            if (baseUrlInput) {
+                baseUrlInput.required = true;
+                // 如果是通义千问，设置默认API地址
+                if (provider === 'qianwen') {
+                    baseUrlInput.value = this.baseUrlOptions.qianwen;
+                }
+            }
+        } else {
+            baseUrlGroup.style.display = 'none';
+            if (baseUrlInput) {
+                baseUrlInput.required = false;
+                baseUrlInput.value = '';
+            }
+        }
     }
 }
 
