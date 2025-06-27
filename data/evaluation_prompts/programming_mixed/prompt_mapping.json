@@ -31,6 +31,36 @@
             "question_keywords": ["年假计算", "日期计算", "vacation dates", "累积间隔"],
             "prompt_file": "question_5_evaluation.txt",
             "description": "年假累积日期计算函数"
+        },
+        {
+            "question_id": 6,
+            "question_keywords": ["元音检测", "vowel detection", "字符串处理", "最快方法", "性能优化", "时间复杂度"],
+            "prompt_file": "question_6_evaluation.txt",
+            "description": "检测字符串中元音字母的最快方法"
+        },
+        {
+            "question_id": 7,
+            "question_keywords": ["Redis", "集群", "并发安全", "锁机制", "race condition", "自旋锁", "clusterSendPing", "并发修复"],
+            "prompt_file": "question_7_evaluation.txt",
+            "description": "Redis集群并发安全问题分析与修复"
+        },
+        {
+            "question_id": 8,
+            "question_keywords": ["客流量", "排列", "约束满足", "数学分析", "组合数学", "算法设计", "模运算", "优化问题"],
+            "prompt_file": "question_8_evaluation.txt",
+            "description": "客流量上限分配问题：排列约束优化"
+        },
+        {
+            "question_id": 9,
+            "question_keywords": ["逃离高塔", "立方数", "个位数字", "Java", "蓝桥杯", "数学规律", "模运算", "循环计数"],
+            "prompt_file": "question_9_evaluation.txt",
+            "description": "逃离高塔：统计立方数个位数字为3的个数"
+        },
+        {
+            "question_id": 10,
+            "question_keywords": ["银行账户", "并发访问", "线程安全", "threading.Lock", "竞态条件", "race condition", "logging", "多线程", "共享资源", "临界区", "BankAccount"],
+            "prompt_file": "question_10_evaluation.txt",
+            "description": "银行账户系统并发访问问题：线程安全实现"
         }
     ]
 } 

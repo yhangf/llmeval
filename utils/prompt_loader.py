@@ -182,7 +182,7 @@ class PromptLoader:
                 
                 # 合并自定义提示词
                 self.prompts.update(custom_prompts)
-                print(f"成功加载自定义提示词: {len(custom_prompts)} 个")
+    
                 
             except Exception as e:
                 print(f"加载自定义提示词失败: {e}")
@@ -418,27 +418,49 @@ class PromptLoader:
             with open(mapping_file, 'r', encoding='utf-8') as f:
                 mapping_config = json.load(f)
             
-            # 根据问题ID查找
+            # 根据问题ID查找 - 优先级最高
             question_id = question_data.get('id')
+            print(f"🔍 查找问题ID: {question_id}")
+            
             for mapping in mapping_config.get('question_mappings', []):
                 if mapping.get('question_id') == question_id:
                     prompt_file = mapping.get('prompt_file')
-                    return os.path.join("data/evaluation_prompts", dataset_type, prompt_file)
+                    full_path = os.path.join("data/evaluation_prompts", dataset_type, prompt_file)
+                    print(f"✅ 通过ID匹配找到: {prompt_file}")
+                    return full_path
             
-            # 如果没有找到精确匹配，尝试关键词匹配
+            print(f"⚠️ 未找到ID {question_id} 的精确匹配，尝试关键词匹配")
+            
+            # 如果没有找到精确ID匹配，尝试关键词匹配
             question_text = (question_data.get('question') or question_data.get('content', '')).lower()
+            
+            # 改进关键词匹配：寻找最佳匹配而不是第一个匹配
+            best_match = None
+            max_keyword_matches = 0
+            
             for mapping in mapping_config.get('question_mappings', []):
                 keywords = mapping.get('question_keywords', [])
-                if any(keyword.lower() in question_text for keyword in keywords):
-                    prompt_file = mapping.get('prompt_file')
-                    return os.path.join("data/evaluation_prompts", dataset_type, prompt_file)
+                # 计算匹配的关键词数量
+                matched_keywords = sum(1 for keyword in keywords if keyword.lower() in question_text)
+                
+                if matched_keywords > max_keyword_matches:
+                    max_keyword_matches = matched_keywords
+                    best_match = mapping
+                    print(f"🎯 找到更好的关键词匹配: {mapping.get('description')} (匹配{matched_keywords}个关键词)")
+            
+            if best_match:
+                prompt_file = best_match.get('prompt_file')
+                full_path = os.path.join("data/evaluation_prompts", dataset_type, prompt_file)
+                print(f"✅ 通过关键词匹配找到: {prompt_file} (匹配了{max_keyword_matches}个关键词)")
+                return full_path
             
         except Exception as e:
-            print(f"读取评估提示映射文件失败: {e}")
+            print(f"❌ 读取评估提示映射文件失败: {e}")
         
         # 如果都没找到，返回默认路径
-        print(f"⚠️ 未找到匹配的提示文件，使用默认路径")
-        return os.path.join("data/evaluation_prompts", dataset_type, f"question_{question_data['id']}_evaluation.txt")
+        default_path = os.path.join("data/evaluation_prompts", dataset_type, f"question_{question_data['id']}_evaluation.txt")
+        print(f"⚠️ 未找到匹配的提示文件，使用默认路径: {default_path}")
+        return default_path
     
     def _determine_dataset_type(self, question_data: dict) -> str:
         """根据问题数据确定数据集类型"""
@@ -491,10 +513,9 @@ class PromptLoader:
 {question_text}
 
 重要说明：
-1. 请直接给出最终答案，不要包含思考过程或解释
-2. 如果是编程题，请直接给出可执行的代码
-3. 如果题目要求特定输出格式，请严格按照要求输出
-4. 不要添加额外的说明文字
+1. 如果是编程题，请直接给出可执行的代码
+2. 如果题目要求特定输出格式，请严格按照要求输出
+3. 不要添加额外的说明文字
 
 请将你的答案放在以下标签中：
 <answer>
@@ -506,6 +527,7 @@ class PromptLoader:
             prompt += """
 
 特别注意：
+- 请输出相对应的代码。
 - 对于任务1，请输出完整的单词列表
 - 对于任务2，请输出完整的网址列表  
 - 对于任务3，请输出threat的出现次数和位置列表
@@ -529,4 +551,11 @@ class PromptLoader:
 - 确保测试用例 year=2023, total_vacation_days=10 的输出正确
 - 把测试用例的结果输出在回答中,确保回答中包含['2023-01-19', '2023-02-06', ......]的格式"""
         
+        elif question_id == "6":
+            prompt += """
+
+特别注意：
+- 尽可能生成多种方法。
+- 只需要生成函数，不需要生成完整的代码"""
+
         return prompt 

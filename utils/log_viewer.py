@@ -315,6 +315,48 @@ def cleanup_old_logs(days: int = 7):
     else:
         print("📭 没有需要清理的旧日志文件")
 
+def cleanup_old_task_logs(max_tasks: int = 5):
+    """清理旧任务的日志文件，只保留最近N个任务的日志"""
+    try:
+        print(f"🧹 自动清理旧任务日志，保留最近 {max_tasks} 个任务的日志...")
+        
+        log_files = EvaluationLogger.list_log_files()
+        
+        if len(log_files) <= max_tasks:
+            print("📭 日志文件数量未超过限制，无需清理")
+            return
+        
+        # 按创建时间倒序排序
+        log_files.sort(key=lambda x: x['created_time'], reverse=True)
+        
+        # 保留最近的max_tasks个日志，删除其余的
+        logs_to_keep = log_files[:max_tasks]
+        logs_to_delete = log_files[max_tasks:]
+        
+        deleted_count = 0
+        for log_file in logs_to_delete:
+            try:
+                # 删除日志文件
+                os.remove(log_file['path'])
+                deleted_count += 1
+                print(f"🗑️  删除旧日志: {log_file['filename']}")
+                
+                # 删除对应的JSON文件
+                if log_file.get('has_json'):
+                    os.remove(log_file['json_file'])
+                    print(f"🗑️  删除对应JSON: {os.path.basename(log_file['json_file'])}")
+                    
+            except Exception as e:
+                print(f"❌ 删除日志失败: {log_file['filename']} - {e}")
+        
+        if deleted_count > 0:
+            print(f"✅ 自动清理完成，删除了 {deleted_count} 个旧任务日志，保留最近的 {max_tasks} 个任务日志")
+        else:
+            print("📭 没有需要清理的旧任务日志")
+            
+    except Exception as e:
+        print(f"❌ 自动清理任务日志失败: {e}")
+
 
 def show_log_stats():
     """显示日志统计信息"""

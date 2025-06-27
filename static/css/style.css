@@ -144,25 +144,45 @@ body {
 
 /* 状态徽章样式 */
 .badge {
-    border-radius: 20px;
+    border-radius: 25px !important;
     font-weight: 500;
-    padding: 6px 12px;
+    padding: 8px 15px !important;
+    font-size: 0.85rem !important;
 }
 
 .badge.bg-warning {
     background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%) !important;
+    color: white !important;
 }
 
 .badge.bg-primary {
     background: linear-gradient(135deg, #3498db 0%, #2980b9 100%) !important;
+    color: white !important;
 }
 
 .badge.bg-success {
     background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%) !important;
+    color: white !important;
 }
 
 .badge.bg-danger {
     background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%) !important;
+    color: white !important;
+}
+
+.badge.bg-orange {
+    background: linear-gradient(135deg, #fd7e14 0%, #e55a4e 100%) !important;
+    color: white !important;
+}
+
+.badge.bg-secondary {
+    background: linear-gradient(135deg, #6c757d 0%, #495057 100%) !important;
+    color: white !important;
+}
+
+.badge.bg-info {
+    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%) !important;
+    color: white !important;
 }
 
 /* 模型卡片样式 */
@@ -352,8 +372,8 @@ body {
 }
 
 .table thead th {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    background: linear-gradient(135deg, #495057 0%, #343a40 100%) !important;
+    color: white !important;
     border: none;
     font-weight: 600;
 }
@@ -370,4 +390,375 @@ body {
     border-radius: 10px;
     padding: 20px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* 模型评估历史表格样式 */
+#modelEvaluationsContainer .table {
+    margin-bottom: 0;
+    font-size: 0.9rem;
+}
+
+#modelEvaluationsContainer .table th {
+    font-size: 0.85rem;
+    font-weight: 600;
+    background-color: #495057 !important;
+    color: white !important;
+    border: none;
+    padding: 0.75rem 0.5rem;
+}
+
+#modelEvaluationsContainer .table td {
+    font-size: 0.8rem;
+    vertical-align: middle;
+    padding: 0.6rem 0.5rem;
+    border-top: 1px solid #dee2e6;
+}
+
+#modelEvaluationsContainer .table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* 让评估历史卡片更紧凑 */
+#modelEvaluationsContainer .card-body {
+    padding: 0;
+}
+
+/* 响应式表格 */
+@media (max-width: 768px) {
+    #modelEvaluationsContainer .table-responsive {
+        font-size: 0.75rem;
+    }
+    
+    #modelEvaluationsContainer .table th,
+    #modelEvaluationsContainer .table td {
+        padding: 0.4rem 0.3rem;
+    }
+    
+    .badge {
+        padding: 6px 12px !important;
+        font-size: 0.75rem !important;
+    }
+}
+
+/* 模态框修复样式 */
+.modal.show {
+    display: block !important;
+}
+
+.modal {
+    z-index: 1050 !important;
+}
+
+.modal-backdrop {
+    z-index: 1040 !important;
+}
+
+/* 确保模态框内容可见 */
+.modal-dialog {
+    margin: 1.75rem auto !important;
+    max-width: 90% !important;
+}
+
+.modal-content {
+    background-color: #fff !important;
+    border: 1px solid rgba(0,0,0,.2) !important;
+    border-radius: 0.375rem !important;
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15) !important;
+}
+
+/* 强制模态框在最前面 */
+.modal.fade.show {
+    opacity: 1 !important;
+    transform: none !important;
+}
+
+body.modal-open {
+    overflow: hidden !important;
+}
+
+/* 自定义模态框样式 - 完全替代Bootstrap模态框 */
+.custom-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    overflow-y: auto;
+}
+
+.custom-modal.show {
+    display: flex !important;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 20px;
+}
+
+.custom-modal-dialog {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    max-width: 90%;
+    width: 1200px;
+    max-height: 90vh;
+    margin: auto;
+    position: relative;
+    animation: modalFadeIn 0.3s ease-out;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.custom-modal-header {
+    padding: 20px 30px;
+    border-bottom: 1px solid #dee2e6;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.custom-modal-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.custom-modal-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+.custom-modal-close:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.custom-modal-body {
+    padding: 30px;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.custom-modal-footer {
+    padding: 20px 30px;
+    border-top: 1px solid #dee2e6;
+    background-color: #f8f9fa;
+    border-radius: 0 0 8px 8px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+/* 确保模态框在最顶层，但工具提示层级更高 */
+.custom-modal {
+    z-index: 10000 !important;
+}
+
+/* 确保工具提示在模态框中也能正确显示 */
+.custom-modal .tooltip-bubble {
+    z-index: 99999 !important;
+}
+
+/* 确保工具提示不会被表格遮挡 */
+.table thead {
+    position: relative;
+    z-index: 10;
+}
+
+.table th {
+    position: relative;
+    overflow: visible;
+}
+
+.table {
+    overflow: visible;
+}
+
+.table-responsive {
+    overflow: visible;
+}
+
+/* 修复表格标题中的工具提示显示 */
+th .tooltip-term .tooltip-bubble {
+    top: calc(100% + 10px);
+    z-index: 99999;
+}
+
+/* 模态框内容样式 */
+.custom-modal .table-responsive {
+    max-height: 400px;
+    overflow-y: auto;
+    overflow-x: visible;
+}
+
+.custom-modal .badge {
+    font-size: 0.85em;
+}
+
+/* 气泡提示样式 */
+.tooltip-term {
+    position: relative;
+    cursor: help;
+    border-bottom: 1px dotted #6c757d;
+    color: #495057;
+    text-decoration: none;
+}
+
+.tooltip-term:hover {
+    color: #007bff;
+    border-bottom-color: #007bff;
+}
+
+.tooltip-bubble {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #2c3e50;
+    color: white;
+    padding: 16px 20px;
+    border-radius: 8px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+    z-index: 99999;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    font-size: 0.875rem;
+    line-height: 1.6;
+    max-width: 400px;
+    min-width: 200px;
+    white-space: normal;
+    text-align: left;
+    margin-top: 8px;
+}
+
+.tooltip-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-bottom-color: #2c3e50;
+}
+
+.tooltip-term:hover .tooltip-bubble {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* 为默认位置的气泡添加悬停时的轻微位移 */
+.tooltip-term:not(.tooltip-right):not(.tooltip-left):hover .tooltip-bubble {
+    transform: translateX(-50%) translateY(5px);
+}
+
+/* 为右侧气泡添加悬停状态 */
+.tooltip-right:hover .tooltip-bubble {
+    transform: translateY(-50%) translateX(5px);
+}
+
+/* 为左侧气泡添加悬停状态 */
+.tooltip-left:hover .tooltip-bubble {
+    transform: translateY(-50%) translateX(-5px);
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .tooltip-bubble {
+        font-size: 0.8rem;
+        padding: 10px 12px;
+        max-width: 250px;
+    }
+    
+    .tooltip-bubble::after {
+        border-width: 5px;
+    }
+}
+
+/* 针对不同位置的气泡 */
+.tooltip-right .tooltip-bubble {
+    left: 100%;
+    transform: translateY(-50%);
+    bottom: auto;
+    top: 50%;
+    margin-left: 10px;
+    z-index: 99999;
+}
+
+.tooltip-right .tooltip-bubble::after {
+    top: 50%;
+    left: -12px;
+    transform: translateY(-50%);
+    border: 6px solid transparent;
+    border-right-color: #2c3e50;
+    border-top-color: transparent;
+}
+
+.tooltip-left .tooltip-bubble {
+    right: 100%;
+    left: auto;
+    transform: translateY(-50%);
+    bottom: auto;
+    top: 50%;
+    margin-right: 10px;
+    z-index: 99999;
+}
+
+.tooltip-left .tooltip-bubble::after {
+    top: 50%;
+    right: -12px;
+    left: auto;
+    transform: translateY(-50%);
+    border: 6px solid transparent;
+    border-left-color: #2c3e50;
+    border-top-color: transparent;
+}
+
+/* 任务详情弹窗中的表格样式 */
+.custom-modal .table thead th {
+    background: linear-gradient(135deg, #495057 0%, #343a40 100%) !important;
+    color: white !important;
+    border: none;
+    font-weight: 600;
+}
+
+.custom-modal .table {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.custom-modal .badge {
+    border-radius: 25px !important;
+    font-weight: 500;
+    padding: 8px 15px !important;
+    font-size: 0.85rem !important;
+}
+
+.custom-modal .tooltip-bubble {
+    z-index: 10000;
 } 

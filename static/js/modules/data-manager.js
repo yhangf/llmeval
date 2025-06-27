@@ -1,14 +1,15 @@
 /**
  * 数据管理模块
- * 负责问题集和答案集的加载和管理
+ * 负责问题集、答案集和模型评估历史的管理
  */
 class DataManager {
     constructor(apiManager, uiComponents, notificationManager) {
         this.apiManager = apiManager;
         this.uiComponents = uiComponents;
         this.notificationManager = notificationManager;
-        this.questionSets = [];
-        this.answerSets = [];
+        this.questions = [];
+        this.answers = [];
+        this.modelEvaluations = [];
     }
 
     /**
@@ -19,8 +20,9 @@ class DataManager {
             const data = await this.apiManager.getQuestions();
             
             if (data.success) {
-                this.questionSets = data.data;
-                this.updateQuestionSetsDisplay(data.data);
+                this.questions = data.data;
+                this.uiComponents.updateQuestionSets(data.data);
+                this.updateQuestionSetsDropdown(data.data);
                 
                 // 如果有问题集，默认选择第一个并显示预览
                 if (data.data.length > 0) {
@@ -38,17 +40,90 @@ class DataManager {
         }
     }
 
-
+    /**
+     * 加载答案集
+     */
+    async loadAnswers() {
+        try {
+            const data = await this.apiManager.getAnswers();
+            
+            if (data.success) {
+                this.answers = data.data;
+                this.uiComponents.updateAnswerSets(data.data);
+                return data.data;
+            } else {
+                throw new Error(data.message || '获取答案集失败');
+            }
+        } catch (error) {
+            console.error('加载答案集失败:', error);
+            this.notificationManager.error('加载答案集失败');
+            throw error;
+        }
+    }
 
     /**
-     * 更新问题集显示
+     * 加载模型评估历史
      */
-    updateQuestionSetsDisplay(questionSets) {
+    async loadModelEvaluations() {
+        try {
+            const data = await this.apiManager.getModelEvaluations();
+            
+            if (data.success) {
+                this.modelEvaluations = data.data;
+                this.uiComponents.updateModelEvaluations(data.data);
+                return data.data;
+            } else {
+                throw new Error(data.message || '获取模型评估历史失败');
+            }
+        } catch (error) {
+            console.error('加载模型评估历史失败:', error);
+            this.notificationManager.error('加载模型评估历史失败');
+            throw error;
+        }
+    }
+
+    /**
+     * 获取问题集列表
+     */
+    getQuestions() {
+        return this.questions;
+    }
+
+    /**
+     * 获取答案集列表
+     */
+    getAnswers() {
+        return this.answers;
+    }
+
+    /**
+     * 获取模型评估历史
+     */
+    getModelEvaluations() {
+        return this.modelEvaluations;
+    }
+
+    /**
+     * 根据文件名获取问题集
+     */
+    getQuestionByFilename(filename) {
+        return this.questions.find(q => q.filename === filename);
+    }
+
+    /**
+     * 根据文件名获取答案集
+     */
+    getAnswerByFilename(filename) {
+        return this.answers.find(a => a.filename === filename);
+    }
+
+    /**
+     * 更新问题集下拉框
+     */
+    updateQuestionSetsDropdown(questionSets) {
         const questionSelect = document.getElementById('questionSet');
-        const container = document.getElementById('questionSetsContainer');
-        
-        if (!questionSelect || !container) {
-            console.warn('问题集相关元素未找到');
+        if (!questionSelect) {
+            console.warn('问题集下拉框元素未找到');
             return;
         }
         
@@ -60,45 +135,7 @@ class DataManager {
             option.textContent = `${set.name || set.filename} (${set.count}题) - ${set.type || '通用'}`;
             questionSelect.appendChild(option);
         });
-
-        // 更新显示容器
-        if (questionSets.length === 0) {
-            container.innerHTML = `
-                <div class="text-center text-muted">
-                    <i class="bi bi-file-text fs-1"></i>
-                    <p class="mt-2">暂无问题集</p>
-                </div>
-            `;
-            return;
-        }
-
-        container.innerHTML = questionSets.map(set => `
-            <div class="card mb-3">
-                <div class="card-body">
-                    <h6 class="card-title">${set.name || set.filename}</h6>
-                    <p class="card-text">
-                        <span class="badge bg-primary">${set.count} 题</span>
-                        <span class="badge bg-secondary ms-2">${set.type || '通用'}</span>
-                        ${set.error ? `<span class="badge bg-danger ms-2">读取错误</span>` : ''}
-                    </p>
-                    ${set.error ? `
-                        <div class="alert alert-warning mt-2">
-                            <small>错误信息: ${set.error}</small>
-                        </div>
-                    ` : ''}
-                    <div class="mt-2">
-                        ${set.preview && set.preview.length > 0 ? set.preview.map(q => `
-                            <div class="question-item">
-                                <small><strong>Q${q.id}:</strong> ${(q.question || q.content || '无内容').substring(0, 50)}...</small>
-                            </div>
-                        `).join('') : '<small class="text-muted">暂无预览</small>'}
-                    </div>
-                </div>
-            </div>
-        `).join('');
     }
-
-
 
     /**
      * 加载问题预览
@@ -111,8 +148,8 @@ class DataManager {
         
         try {
             // 首先检查是否已经有缓存的问题集数据
-            if (this.questionSets) {
-                const questionSet = this.questionSets.find(set => set.filename === filename);
+            if (this.questions) {
+                const questionSet = this.questions.find(set => set.filename === filename);
                 if (questionSet) {
                     this.updateQuestionPreview(questionSet.preview);
                     return;
@@ -175,20 +212,6 @@ class DataManager {
                 `).join('')}
             </div>
         `;
-    }
-
-    /**
-     * 获取问题集列表
-     */
-    getQuestionSets() {
-        return this.questionSets;
-    }
-
-    /**
-     * 根据文件名获取问题集
-     */
-    getQuestionSetByFilename(filename) {
-        return this.questionSets.find(set => set.filename === filename);
     }
 }
 

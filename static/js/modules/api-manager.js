@@ -76,6 +76,13 @@ class ApiManager {
     }
 
     /**
+     * 获取完整数据集内容
+     */
+    async getFullDataset(filename) {
+        return this.request(`/api/dataset/${encodeURIComponent(filename)}`);
+    }
+
+    /**
      * 获取任务列表
      */
     async getTasks() {
@@ -106,6 +113,13 @@ class ApiManager {
         return this.request(`/api/tasks/${taskId}`, {
             method: 'DELETE'
         });
+    }
+
+    /**
+     * 获取模型评估历史
+     */
+    async getModelEvaluations() {
+        return this.request('/api/model-evaluations');
     }
 }
 

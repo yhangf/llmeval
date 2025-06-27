@@ -26,6 +26,9 @@ class TaskManager:
         
         # 加载现有任务
         self.load_tasks()
+        
+        # 启动时自动清理旧任务
+        self.cleanup_old_tasks(max_tasks=5)
     
     def create_task(self, task_id: str, task_info: Dict[str, Any]) -> bool:
         """创建新任务"""
@@ -35,6 +38,10 @@ class TaskManager:
             
             self.tasks[task_id] = task_info.copy()
             self.save_task(task_id)
+            
+            # 自动清理旧任务，只保留最近的5个
+            self.cleanup_old_tasks(max_tasks=5)
+            
             return True
     
     def get_task(self, task_id: str) -> Optional[Dict[str, Any]]:
@@ -51,6 +58,11 @@ class TaskManager:
             self.tasks[task_id]["status"] = status
             self.tasks[task_id]["updated_at"] = datetime.now().isoformat()
             self.save_task(task_id)
+            
+            # 如果任务完成或失败，触发清理
+            if status in ['completed', 'failed']:
+                self.cleanup_old_tasks(max_tasks=5)
+            
             return True
     
     def update_task_progress(self, task_id: str, progress: int, current_question: int = None, total_questions: int = None) -> bool:
@@ -161,4 +173,45 @@ class TaskManager:
             )
             stats["recent_tasks"] = sorted_tasks[:5]
             
-            return stats 
+            return stats
+    
+    def cleanup_old_tasks(self, max_tasks: int = 5):
+        """清理旧任务，只保留最近的N个任务"""
+        try:
+            if len(self.tasks) <= max_tasks:
+                return  # 任务数量未超过限制，无需清理
+            
+            # 按创建时间排序，获取需要删除的任务
+            sorted_tasks = sorted(
+                self.tasks.items(),
+                key=lambda x: x[1].get("created_at", ""),
+                reverse=True
+            )
+            
+            # 保留最近的max_tasks个任务，删除其余的
+            tasks_to_keep = sorted_tasks[:max_tasks]
+            tasks_to_delete = sorted_tasks[max_tasks:]
+            
+            deleted_count = 0
+            for task_id, task_info in tasks_to_delete:
+                try:
+                    # 删除任务文件
+                    task_file = os.path.join(self.data_dir, f"{task_id}.json")
+                    if os.path.exists(task_file):
+                        os.remove(task_file)
+                    
+                    # 从内存中删除
+                    if task_id in self.tasks:
+                        del self.tasks[task_id]
+                    
+                    deleted_count += 1
+                    print(f"自动清理旧任务: {task_id} (创建于: {task_info.get('created_at', '未知')})")
+                    
+                except Exception as e:
+                    print(f"删除任务失败 {task_id}: {e}")
+            
+            if deleted_count > 0:
+                print(f"自动清理完成，删除了 {deleted_count} 个旧任务，保留最近的 {max_tasks} 个任务")
+            
+        except Exception as e:
+            print(f"自动清理任务失败: {e}") 

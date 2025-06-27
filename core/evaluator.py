@@ -55,6 +55,10 @@ class Evaluator:
         # 创建答案映射
         answer_map = self._create_answer_mapping(answers)
         
+        # 记录待评估模型开始回答时间
+        model_start_time = datetime.now()
+        results["model_generation_start_time"] = model_start_time.isoformat()
+        
         # 逐一评估问题
         for i, question in enumerate(questions):
             # 获取问题ID和参考答案
@@ -103,11 +107,24 @@ class Evaluator:
             results["results"].append(result_item)
             results["total_tokens"] += result_item["tokens_used"]
         
+        # 记录待评估模型回答完成时间并计算总耗时
+        model_end_time = datetime.now()
+        results["model_generation_end_time"] = model_end_time.isoformat()
+        
+        # 计算总耗时（秒）
+        total_duration = (model_end_time - model_start_time).total_seconds()
+        results["total_duration_seconds"] = total_duration
+        
         # 完成评估 - 更新进度到100%
         if progress_callback:
             progress_callback(100)
         
         results["summary"] = self.score_calculator.calculate_summary_statistics(results["results"])
+        
+        # 将总耗时添加到汇总统计中
+        results["summary"]["total_duration_seconds"] = total_duration
+        results["summary"]["total_duration_formatted"] = self._format_duration(total_duration)
+        
         results["total_cost"] = self.score_calculator.estimate_cost(results["total_tokens"], target_model_name)
         results["end_time"] = datetime.now().isoformat()
         
@@ -354,4 +371,20 @@ class Evaluator:
             "evaluation": evaluation,
             "tokens_used": model_response.get('tokens_used', 0) + evaluation.get('evaluation_tokens', 0),
             "timestamp": model_response.get('timestamp')
-        } 
+        }
+    
+    def _format_duration(self, seconds: float) -> str:
+        """格式化时长显示"""
+        if seconds < 1:
+            return f"{int(seconds * 1000)}ms"
+        elif seconds < 60:
+            return f"{seconds:.1f}s"
+        elif seconds < 3600:
+            minutes = int(seconds // 60)
+            remaining_seconds = seconds % 60
+            return f"{minutes}m {remaining_seconds:.1f}s"
+        else:
+            hours = int(seconds // 3600)
+            remaining_minutes = int((seconds % 3600) // 60)
+            remaining_seconds = seconds % 60
+            return f"{hours}h {remaining_minutes}m {remaining_seconds:.1f}s" 

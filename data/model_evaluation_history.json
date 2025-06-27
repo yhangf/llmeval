@@ -1,0 +1,52 @@
+{
+  "model_evaluations": {
+    "deepseek-chat": {
+      "task_id": "184912a3-1b45-4667-a437-fb6d666d2744",
+      "model_name": "deepseek-chat",
+      "evaluator_model": "deepseek-chat",
+      "created_at": "2025-06-24T17:10:56.103347",
+      "average_score": 68.37,
+      "total_questions": 10,
+      "fully_met_requirements": 6,
+      "partially_met_requirements": 2,
+      "unmet_requirements": 2,
+      "total_tokens": 20753,
+      "total_duration_seconds": 359.643315,
+      "total_duration_formatted": "5m 59.6s",
+      "task_exists": true,
+      "last_updated": "2025-06-24T17:16:55.761399"
+    },
+    "deepseek-chat-auto": {
+      "task_id": "b10f34db-00ad-4fef-ba12-67416b1512f7",
+      "model_name": "deepseek-chat-auto",
+      "evaluator_model": "deepseek-chat",
+      "created_at": "2025-06-24T09:13:26.192534",
+      "average_score": 76.07,
+      "total_questions": 5,
+      "fully_met_requirements": 3,
+      "partially_met_requirements": 2,
+      "unmet_requirements": 0,
+      "total_tokens": 7996,
+      "task_exists": true,
+      "last_updated": "2025-06-24T09:54:46.384876"
+    },
+    "qwen-plus-latest": {
+      "task_id": "38fa4cc0-8362-4f19-9ed0-5fb733f131a4",
+      "model_name": "qwen-plus-latest",
+      "evaluator_model": "deepseek-chat",
+      "created_at": "2025-06-24T19:35:53.447347",
+      "average_score": 76.0,
+      "total_questions": 10,
+      "fully_met_requirements": 6,
+      "partially_met_requirements": 2,
+      "unmet_requirements": 2,
+      "total_tokens": 22619,
+      "total_duration_seconds": 286.475352,
+      "total_duration_formatted": "4m 46.5s",
+      "task_exists": true,
+      "last_updated": "2025-06-24T19:40:40.018878"
+    }
+  },
+  "last_updated": "2025-06-24T19:40:40.019399",
+  "version": "1.0"
+}
